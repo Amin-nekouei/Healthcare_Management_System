@@ -45,6 +45,8 @@ import jakarta.persistence.Transient;
 public class Medicine extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	public static final String FIND_ALL = null;
+
 	// Hint - @Basic(optional = false) is used when the object cannot be null.
 	// Hint - @Basic or none can be used if the object can be null.
 	// Hint - @Basic is for checking the state of object at the scope of our code.

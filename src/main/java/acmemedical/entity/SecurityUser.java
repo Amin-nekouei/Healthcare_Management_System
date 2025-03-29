@@ -36,14 +36,11 @@ import jakarta.persistence.Table;
 
 //TODO SU01 - Make this into JPA entity and add all the necessary annotations inside the class.
 @Entity
-@Table(name = "security_user") 
-@NamedQueries({
-    @NamedQuery(name = "SecurityUser.FIND_BY_PHYSICIAN_ID", 
-                query = "SELECT su FROM SecurityUser su WHERE su.physician.id = :physicianId"),
-    @NamedQuery(name = "SecurityUser.userByName",
-    query = "SELECT s FROM SecurityUser s WHERE s.username = :param1")
-
-})
+@NamedQuery(
+    name = "SecurityUser.userByName",
+    query = "SELECT su FROM SecurityUser su WHERE su.username = :param1"
+)
+@Table(name = "security_user")
 //@NamedQuery(
 //	    name = "SecurityUser.FIND_BY_PHYSICIAN_ID",
 //	    query = "SELECT su FROM SecurityUser su WHERE su.physician.id = :" + PARAM1
@@ -59,7 +56,7 @@ public class SecurityUser implements Serializable, Principal {
     //TODO SU02 - Add annotations.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "user_id")
     protected int id;
     
     //TODO SU03 - Add annotations.
@@ -67,7 +64,7 @@ public class SecurityUser implements Serializable, Principal {
     protected String username;
     
     //TODO SU04 - Add annotations.
-    @Column(name = "pw_hash", nullable = false)
+    @Column(name = "password_hash", nullable = false)
     protected String pwHash;
     
     //TODO SU05 - Add annotations.
@@ -76,11 +73,14 @@ public class SecurityUser implements Serializable, Principal {
     protected Physician physician;
     
     //TODO SU06 - Add annotations.
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "security_user_roles",
-               joinColumns = @JoinColumn(name = "security_user_id"),
-               inverseJoinColumns = @JoinColumn(name = "security_role_id"))
-    protected Set<SecurityRole> roles = new HashSet<SecurityRole>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_has_role",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    //protected Set<SecurityRole> roles = new HashSet<SecurityRole>();
+    protected Set<SecurityRole> roles = new HashSet<>();
 
     public SecurityUser() {
         super();

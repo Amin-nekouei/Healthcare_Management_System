@@ -33,6 +33,9 @@ import jakarta.persistence.Table;
 @NamedQuery(name = "Prescription.findAll", query = "SELECT p FROM Prescription p")
 public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implements Serializable {
 	private static final long serialVersionUID = 1L;
+	
+	//modifed JK
+	public static final String FIND_ALL = "Prescription.findAll";
 
 	// Hint - What annotation is used for a composite primary key type?
 	@EmbeddedId
@@ -45,7 +48,6 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 	private Physician physician;
 
 	//TODO PR01 - Add missing annotations.  Similar to physician, this field is a part of the composite key of this entity.  What should be the cascade and fetch types?  Reference to a patient is not optional.
-    
 	@MapsId("patientId")
 	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id", referencedColumnName = "id", nullable = false)

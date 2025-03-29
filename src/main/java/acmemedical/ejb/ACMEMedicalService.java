@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.Singleton;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
@@ -44,9 +45,10 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import jakarta.security.enterprise.identitystore.Pbkdf2PasswordHash;
 import jakarta.transaction.Transactional;
-
-
-
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -80,6 +82,10 @@ public class ACMEMedicalService implements Serializable {
     @Inject
     protected Pbkdf2PasswordHash pbAndjPasswordHash;
 
+    @GET
+    @Path("/physicians")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("ADMIN_ROLE")  // <- 이거 꼭 있어야 함!
     public List<Physician> getAllPhysicians() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Physician> cq = cb.createQuery(Physician.class);
@@ -209,7 +215,7 @@ public class ACMEMedicalService implements Serializable {
         TypedQuery<T> allQuery = em.createNamedQuery(namedQuery, entity);
         return allQuery.getResultList();
     }
-    
+        
     public <T> T getById(Class<T> entity, String namedQuery, int id) {
         TypedQuery<T> allQuery = em.createNamedQuery(namedQuery, entity);
         allQuery.setParameter(PARAM1, id);
@@ -285,5 +291,22 @@ public class ACMEMedicalService implements Serializable {
         }
         return medicalTrainingToBeUpdated;
     }
-    
+
+    //modified by JK
+    public <T> T persist(T entity) {
+        return em.merge(entity);
+    }
+
+    public <T> T update(T entity) {
+        return em.merge(entity);
+    }
+
+    public <T> void delete(Class<T> clazz, int id) {
+        T ref = em.find(clazz, id);
+        if (ref != null) {
+            em.remove(ref);
+        }
+    }
+
+
 }

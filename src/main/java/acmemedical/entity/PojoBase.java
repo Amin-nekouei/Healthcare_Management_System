@@ -30,7 +30,7 @@ import jakarta.persistence.Version;
 //TODO PB03 - Add annotation for listener class.
 @MappedSuperclass
 @Access(AccessType.FIELD)
-@EntityListeners(PojoCompositeListener.class)
+@EntityListeners(PojoListener.class)
 public abstract class PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 

@@ -10,6 +10,7 @@ package acmemedical.rest.resource;
 
 import static acmemedical.utility.MyConstants.ADMIN_ROLE;
 import static acmemedical.utility.MyConstants.PHYSICIAN_PATIENT_MEDICINE_RESOURCE_PATH;
+import static acmemedical.utility.MyConstants.APPLICATION_API_VERSION;
 import static acmemedical.utility.MyConstants.PHYSICIAN_RESOURCE_NAME;
 import static acmemedical.utility.MyConstants.RESOURCE_PATH_ID_ELEMENT;
 import static acmemedical.utility.MyConstants.RESOURCE_PATH_ID_PATH;
@@ -19,6 +20,8 @@ import java.util.List;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ejb.EJB;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.security.enterprise.SecurityContext;
 import jakarta.ws.rs.Consumes;
@@ -42,7 +45,8 @@ import acmemedical.entity.Medicine;
 import acmemedical.entity.SecurityUser;
 import acmemedical.entity.Physician;
 
-@Path(PHYSICIAN_RESOURCE_NAME)
+@ApplicationScoped
+@Path("/physician")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class PhysicianResource {

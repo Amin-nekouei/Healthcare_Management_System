@@ -41,6 +41,7 @@ public class MedicalTraining extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public static final String FIND_BY_ID = "MedicalTraining.FIND_BY_ID";
+	public static final String FIND_ALL = "MedicalTraining.FIND_ALL";
 	
 	// TODO MT03 - Add annotations for M:1.  What should be the cascade and fetch types?
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

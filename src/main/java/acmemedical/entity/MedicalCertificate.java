@@ -37,6 +37,7 @@ public class MedicalCertificate extends PojoBase implements Serializable {
 	
 	//added a variable by JK
 	public static final String ID_CARD_QUERY_NAME = "MedicalCertificate.ID_CARD_QUERY_NAME";
+	public static final String FIND_ALL = "MedicalCertificate.findAll";
 	
 	// TODO MC03 - Add annotations for 1:1 mapping.  What should be the cascade and fetch types?
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY) // TODO MC03 - Define 1:1 relationship

@@ -9,6 +9,7 @@ package acmemedical;
 
 import static acmemedical.utility.MyConstants.APPLICATION_API_VERSION;
 import static acmemedical.utility.MyConstants.APPLICATION_CONTEXT_ROOT;
+import static acmemedical.utility.MyConstants.REST_APPLICATION_PATH;
 import static acmemedical.utility.MyConstants.DEFAULT_ADMIN_USER;
 import static acmemedical.utility.MyConstants.DEFAULT_ADMIN_USER_PASSWORD;
 import static acmemedical.utility.MyConstants.DEFAULT_USER;
@@ -28,6 +29,7 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 
@@ -46,6 +48,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import acmemedical.entity.Physician;
+import acmemedical.utility.MyConstants;
 
 @SuppressWarnings("unused")
 
@@ -89,7 +92,7 @@ public class TestACMEMedicalSystem {
             //.register(userAuth)
             .register(adminAuth)
             .path(PHYSICIAN_RESOURCE_NAME)
-            .request()
+            .request(MediaType.APPLICATION_JSON)
             .get();
         assertThat(response.getStatus(), is(200));
         List<Physician> physicians = response.readEntity(new GenericType<List<Physician>>(){});

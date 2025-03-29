@@ -51,11 +51,18 @@ public class CustomIdentityStoreJPAHelper {
          *  
          */
         try {
-            TypedQuery<SecurityUser> query = em.createNamedQuery("SecurityUser.userByName", SecurityUser.class);
-            query.setParameter(PARAM1, username);
+            TypedQuery<SecurityUser> query = em.createQuery(
+                    "SELECT u FROM SecurityUser u WHERE u.username = :username", SecurityUser.class);
+                query.setParameter("username", username);
             user = query.getSingleResult();
+            
+            LOG.debug("user.getRoles().size() = {}", user.getRoles().size());
+            LOG.debug("user.getUsername() = {}", user.getUsername());
+            user.getRoles().forEach(role -> LOG.debug("role = {}", role.getRoleName()));
+
+            
         } catch (NoResultException e) {
-            // 사용자 없음
+        	return null;
         }
         
         return user;

@@ -32,12 +32,15 @@ import static acmemedical.utility.MyConstants.PARAM1;
 @Table(name = "patient")
 @NamedQuery(name = Patient.FIND_BY_ID,
 	query = "SELECT p FROM Patient p WHERE p.id = :" + PARAM1)
+@NamedQuery(name = "Patient.findAll", query = "SELECT p FROM Patient p")
 
 public class Patient extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	//add by JK
 	public static final String FIND_BY_ID = "Patient.FIND_BY_ID";
+	public static final String FIND_ALL = "Patient.findAll";
+
 	
 	// TODO PA03 - Add missing annotations.
 	@Column(name = "first_name", nullable = false)

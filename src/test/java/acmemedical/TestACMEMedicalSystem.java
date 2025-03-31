@@ -123,30 +123,30 @@ public class TestACMEMedicalSystem {
         assertThat(status, is(200));
     }
     
-//    @Test
-//    public void test03_update_physician_with_adminrole() {
-//        Physician newPhysician = new Physician();
-//
-//        // Generate a unique name to prevent duplication (using millis)
-//        String uniqueSuffix = String.valueOf(System.currentTimeMillis());
-//        newPhysician.setFirstName("TestKyunga");
-//        newPhysician.setLastName("User" + uniqueSuffix); // ex: User1711816235586
-//
-//        // Send a POST request
-//        Response response = webTarget
-//            .register(adminAuth)
-//            .path(PHYSICIAN_RESOURCE_NAME)
-//            .request(MediaType.APPLICATION_JSON)
-//            .post(Entity.json(newPhysician));
-//
-//        // Check the result
-//        int status = response.getStatus();
-//        String body = response.readEntity(String.class);
-//
-//        System.out.println("Status: " + status);
-//        System.out.println("Body: " + body);
-//
-//        // Verify the response code is successful
-//        assertThat(status, is(200));
-//    }
+    @Test
+    public void test03_update_physician_with_adminrole() {
+        Physician newPhysician = new Physician();
+
+        // Generate a unique name to prevent duplication (using millis)
+        String uniqueSuffix = String.valueOf(System.currentTimeMillis());
+        newPhysician.setFirstName("TestKyunga");
+        newPhysician.setLastName("User" + uniqueSuffix); // ex: User1711816235586
+
+        // Send a POST request
+        Response response = webTarget
+            .register(adminAuth)
+            .path(PHYSICIAN_RESOURCE_NAME)
+            .request(MediaType.APPLICATION_JSON)
+            .post(Entity.json(newPhysician));
+
+        // Check the result
+        int status = response.getStatus();
+        String body = response.readEntity(String.class);
+
+        System.out.println("Status: " + status);
+        System.out.println("Body: " + body);
+
+        // Verify the response code is successful
+        assertThat(status, is(200));
+    }
 }

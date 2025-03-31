@@ -48,6 +48,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import acmemedical.entity.MedicalSchool;
 import acmemedical.entity.Physician;
 import acmemedical.utility.MyConstants;
 
@@ -149,4 +150,43 @@ public class TestACMEMedicalSystem {
         // Verify the response code is successful
         assertThat(status, is(200));
     }
+    
+    @Test
+    public void test04_get_physician_by_id_with_adminrole() {
+        // ✅ Step 1: Create a Physician (POST)
+        Physician physicianToGet = new Physician();
+        physicianToGet.setFirstName("GetTestKyunga");
+        physicianToGet.setLastName("User" + System.currentTimeMillis());
+
+        Response postResponse = webTarget
+            .register(adminAuth)
+            .path(PHYSICIAN_RESOURCE_NAME)
+            .request(MediaType.APPLICATION_JSON)
+            .post(Entity.json(physicianToGet));
+
+        assertThat(postResponse.getStatus(), is(200));
+
+        Physician createdPhysician = postResponse.readEntity(Physician.class);
+        int physicianId = createdPhysician.getId();
+
+        // ✅ Step 2: Send GET request using the created ID
+        Response getResponse = webTarget
+            .register(adminAuth)
+            .path(PHYSICIAN_RESOURCE_NAME + "/" + physicianId)
+            .request(MediaType.APPLICATION_JSON)
+            .get();
+
+        // ✅ Step 3: Validate response
+        System.out.println("GET Status: " + getResponse.getStatus());
+        assertThat(getResponse.getStatus(), is(200));
+
+        Physician fetchedPhysician = getResponse.readEntity(Physician.class);
+        assertThat(fetchedPhysician.getId(), is(physicianId));
+        assertThat(fetchedPhysician.getFirstName(), is("GetTestKyunga"));
+    }
+
+    
+ 
+
+
 }

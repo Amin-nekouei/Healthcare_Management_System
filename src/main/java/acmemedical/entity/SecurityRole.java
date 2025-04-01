@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,7 +31,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "security_role")
 @NamedQuery(name = SecurityRole.FIND_BY_NAME, query = "SELECT sr FROM SecurityRole sr WHERE sr.roleName = :name")
-
+@AttributeOverride(name = "id", column = @Column(name = "role_id"))
 public class SecurityRole implements Serializable {
     /** Explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
@@ -44,7 +45,7 @@ public class SecurityRole implements Serializable {
     protected int id;
     
     //TODO SR03 - Add annotations.
-    @Column(name = "role_name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     protected String roleName;
     
     //TODO SR04 - Add annotations.

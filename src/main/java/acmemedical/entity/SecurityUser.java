@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -48,7 +49,7 @@ import jakarta.persistence.Table;
 //	    name = "SecurityUser.FIND_BY_PHYSICIAN_ID",
 //	    query = "SELECT su FROM SecurityUser su WHERE su.physician.id = :" + PARAM1
 //	)
-
+@AttributeOverride(name = "id", column = @Column(name = "user_id"))
 public class SecurityUser implements Serializable, Principal {
     /** Explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
@@ -67,7 +68,7 @@ public class SecurityUser implements Serializable, Principal {
     protected String username;
     
     //TODO SU04 - Add annotations.
-    @Column(name = "pw_hash", nullable = false)
+    @Column(name = "password_hash", nullable = false)
     protected String pwHash;
     
     //TODO SU05 - Add annotations.
@@ -77,9 +78,9 @@ public class SecurityUser implements Serializable, Principal {
     
     //TODO SU06 - Add annotations.
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "security_user_roles",
-               joinColumns = @JoinColumn(name = "security_user_id"),
-               inverseJoinColumns = @JoinColumn(name = "security_role_id"))
+    @JoinTable(name = "user_has_role",
+               joinColumns = @JoinColumn(name = "user_id"),
+               inverseJoinColumns = @JoinColumn(name = "role_id"))
     protected Set<SecurityRole> roles = new HashSet<SecurityRole>();
 
     public SecurityUser() {

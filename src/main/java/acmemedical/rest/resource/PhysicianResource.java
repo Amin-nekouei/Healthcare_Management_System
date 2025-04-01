@@ -94,6 +94,8 @@ public class PhysicianResource {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     //Only a user with the SecurityRole ‘ADMIN_ROLE’ can add a new physician.
     @RolesAllowed({ADMIN_ROLE})
     public Response addPhysician(Physician newPhysician) {

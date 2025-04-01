@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Version;
 
 @SuppressWarnings("unused")
@@ -23,6 +25,8 @@ import jakarta.persistence.Version;
 //TODO PC01 - Add annotation to define this class as superclass of all entities.  Please see Week 9 lecture slides.
 //TODO PC02 - Add annotation to place all JPA annotations on fields.
 //TODO PC03 - Add annotation for listener class.
+@MappedSuperclass
+@EntityListeners(PojoCompositeListener.class)
 public abstract class PojoBaseCompositeKey<ID extends Serializable> implements Serializable {
 	private static final long serialVersionUID = 1L;
 

@@ -1,26 +1,26 @@
 -------------------------------------------------------------------------------
 Test set: acmemedical.rest.resource.PhysicianResourceTest
 -------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 4, Skipped: 0, Time elapsed: 1.119 s <<< FAILURE! - in acmemedical.rest.resource.PhysicianResourceTest
-acmemedical.rest.resource.PhysicianResourceTest.testUpdateMedicineForPhysicianPatient  Time elapsed: 0.842 s  <<< ERROR!
+Tests run: 4, Failures: 0, Errors: 4, Skipped: 0, Time elapsed: 0.741 s <<< FAILURE! - in acmemedical.rest.resource.PhysicianResourceTest
+acmemedical.rest.resource.PhysicianResourceTest.testUpdateMedicineForPhysicianPatient  Time elapsed: 0.526 s  <<< ERROR!
 jakarta.ws.rs.ProcessingException: java.net.ConnectException: Connection refused: connect
 	at acmemedical.rest.resource.PhysicianResourceTest.testUpdateMedicineForPhysicianPatient(PhysicianResourceTest.java:124)
 Caused by: java.net.ConnectException: Connection refused: connect
 	at acmemedical.rest.resource.PhysicianResourceTest.testUpdateMedicineForPhysicianPatient(PhysicianResourceTest.java:124)
 
-acmemedical.rest.resource.PhysicianResourceTest.testGetPhysicians  Time elapsed: 0.042 s  <<< ERROR!
+acmemedical.rest.resource.PhysicianResourceTest.testGetPhysicians  Time elapsed: 0.029 s  <<< ERROR!
 jakarta.ws.rs.ProcessingException: java.net.ConnectException: Connection refused: connect
 	at acmemedical.rest.resource.PhysicianResourceTest.testGetPhysicians(PhysicianResourceTest.java:50)
 Caused by: java.net.ConnectException: Connection refused: connect
 	at acmemedical.rest.resource.PhysicianResourceTest.testGetPhysicians(PhysicianResourceTest.java:50)
 
-acmemedical.rest.resource.PhysicianResourceTest.testAddPhysician  Time elapsed: 0.069 s  <<< ERROR!
+acmemedical.rest.resource.PhysicianResourceTest.testAddPhysician  Time elapsed: 0.039 s  <<< ERROR!
 jakarta.ws.rs.ProcessingException: java.net.ConnectException: Connection refused: connect
 	at acmemedical.rest.resource.PhysicianResourceTest.testAddPhysician(PhysicianResourceTest.java:71)
 Caused by: java.net.ConnectException: Connection refused: connect
 	at acmemedical.rest.resource.PhysicianResourceTest.testAddPhysician(PhysicianResourceTest.java:71)
 
-acmemedical.rest.resource.PhysicianResourceTest.testGetPhysicianById  Time elapsed: 0.035 s  <<< ERROR!
+acmemedical.rest.resource.PhysicianResourceTest.testGetPhysicianById  Time elapsed: 0.026 s  <<< ERROR!
 jakarta.ws.rs.ProcessingException: java.net.ConnectException: Connection refused: connect
 	at acmemedical.rest.resource.PhysicianResourceTest.testGetPhysicianById(PhysicianResourceTest.java:93)
 Caused by: java.net.ConnectException: Connection refused: connect

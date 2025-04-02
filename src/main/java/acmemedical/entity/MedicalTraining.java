@@ -27,6 +27,7 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.NamedQueries;
 
 import static acmemedical.utility.MyConstants.PARAM1;
 
@@ -46,12 +47,17 @@ import static acmemedical.utility.MyConstants.PARAM1;
     @AttributeOverride(name = "created", column = @Column(name = "created")),
     @AttributeOverride(name = "updated", column = @Column(name = "updated"))
 })
-@NamedQuery(name = MedicalTraining.FIND_BY_ID,
-            query = "SELECT mt FROM MedicalTraining mt WHERE mt.id = :" + PARAM1)
+@NamedQueries({
+    @NamedQuery(name = MedicalTraining.ALL_MEDICAL_TRAININGS_QUERY_NAME,
+                query = "SELECT distinct mt FROM MedicalTraining mt LEFT JOIN FETCH mt.school LEFT JOIN FETCH mt.certificate"),
+    @NamedQuery(name = MedicalTraining.FIND_BY_ID,
+                query = "SELECT mt FROM MedicalTraining mt WHERE mt.id = :id") //April02 2025
+})
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 	public class MedicalTraining extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	public static final String ALL_MEDICAL_TRAININGS_QUERY_NAME = "MedicalTraining.ALL_MEDICAL_TRAININGS_QUERY_NAME";
 	public static final String FIND_BY_ID = "MedicalTraining.FIND_BY_ID";
 	
 	// TODO MT03 - Add annotations for M:1.  What should be the cascade and fetch types?

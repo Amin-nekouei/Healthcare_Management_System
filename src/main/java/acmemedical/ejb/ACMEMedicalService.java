@@ -271,7 +271,7 @@ public class ACMEMedicalService implements Serializable {
     
     public MedicalTraining getMedicalTrainingById(int mtId) {
         TypedQuery<MedicalTraining> allMedicalTrainingQuery = em.createNamedQuery(MedicalTraining.FIND_BY_ID, MedicalTraining.class);
-        allMedicalTrainingQuery.setParameter(PARAM1, mtId);
+        allMedicalTrainingQuery.setParameter("id", mtId); //Modified Apri02 2025
         return allMedicalTrainingQuery.getSingleResult();
     }
 
@@ -285,5 +285,99 @@ public class ACMEMedicalService implements Serializable {
         }
         return medicalTrainingToBeUpdated;
     }
+    
+    @Transactional
+    public MedicalTraining deleteMedicalTraining(int id) {
+        MedicalTraining medicalTraining = getMedicalTrainingById(id);
+        if (medicalTraining != null) {
+            em.refresh(medicalTraining);
+            if (medicalTraining.getCertificate() != null) {
+                medicalTraining.getCertificate().setMedicalTraining(null);
+            }
+            em.remove(medicalTraining);
+            return medicalTraining;
+        }
+        return null;
+    }
+    
+    // MedicalCertificate CRUD operations
+    public List<MedicalCertificate> getAllMedicalCertificates() {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<MedicalCertificate> cq = cb.createQuery(MedicalCertificate.class);
+        cq.select(cq.from(MedicalCertificate.class));
+        return em.createQuery(cq).getResultList();
+    }
+
+    public MedicalCertificate getMedicalCertificateById(int id) {
+        TypedQuery<MedicalCertificate> query = em.createNamedQuery(MedicalCertificate.ID_CARD_QUERY_NAME, MedicalCertificate.class);
+        query.setParameter(PARAM1, id);
+        return query.getSingleResult();
+    }
+
+    @Transactional
+    public MedicalCertificate persistMedicalCertificate(MedicalCertificate newMedicalCertificate) {
+        em.persist(newMedicalCertificate);
+        return newMedicalCertificate;
+    }
+
+    @Transactional
+    public MedicalCertificate updateMedicalCertificate(int id, MedicalCertificate medicalCertificateWithUpdates) {
+        MedicalCertificate medicalCertificateToBeUpdated = getMedicalCertificateById(id);
+        if (medicalCertificateToBeUpdated != null) {
+            em.refresh(medicalCertificateToBeUpdated);
+            em.merge(medicalCertificateWithUpdates);
+            em.flush();
+        }
+        return medicalCertificateToBeUpdated;
+    }
+
+    @Transactional
+    public void deleteMedicalCertificateById(int id) {
+        MedicalCertificate medicalCertificate = getMedicalCertificateById(id);
+        if (medicalCertificate != null) {
+            em.refresh(medicalCertificate);
+            em.remove(medicalCertificate);
+        }
+    }
+    
+    // Patient CRUD operations
+    public List<Patient> getAllPatients() {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Patient> cq = cb.createQuery(Patient.class);
+        cq.select(cq.from(Patient.class));
+        return em.createQuery(cq).getResultList();
+    }
+
+    public Patient getPatientById(int id) {
+        return em.find(Patient.class, id);
+    }
+
+    @Transactional
+    public Patient persistPatient(Patient newPatient) {
+        em.persist(newPatient);
+        return newPatient;
+    }
+
+    @Transactional
+    public Patient updatePatient(int id, Patient updatingPatient) {
+        Patient patientToBeUpdated = getPatientById(id);
+        if (patientToBeUpdated != null) {
+            em.refresh(patientToBeUpdated);
+            em.merge(updatingPatient);
+            em.flush();
+        }
+        return patientToBeUpdated;
+    }
+
+    @Transactional
+    public void deletePatientById(int id) {
+        Patient patient = getPatientById(id);
+        if (patient != null) {
+            em.refresh(patient);
+            em.remove(patient);
+        }
+    }
+    
+    
     
 }

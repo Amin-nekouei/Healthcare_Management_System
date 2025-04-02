@@ -45,23 +45,23 @@ public class Patient extends PojoBase implements Serializable {
 	private String firstName;
 
 	// TODO PA04 - Add missing annotations.
-	@Column(name = "lastName", nullable = false)
+	@Column(name = "last_name", nullable = false)
 	private String lastName;
 
 	// TODO PA05 - Add missing annotations.
-	@Column(name = "year", nullable = false)
+	@Column(name = "year_of_birth", nullable = false)
 	private int year;
 
 	// TODO PA06 - Add missing annotations.
-	@Column(name = "address", nullable = false)
+	@Column(name = "home_address", nullable = false)
 	private String address;
 
 	// TODO PA07 - Add missing annotations.
-	@Column(name = "height", nullable = false)
+	@Column(name = "height_cm", nullable = false)
 	private int height;
 
 	// TODO PA08 - Add missing annotations.
-	@Column(name = "weight", nullable = false)
+	@Column(name = "weight_kg", nullable = false)
 	private int weight;
 
 	// TODO PA09 - Add missing annotations.

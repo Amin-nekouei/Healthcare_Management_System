@@ -24,8 +24,11 @@ acmemedical\entity\Physician.class
 acmemedical\entity\PrescriptionPK.class
 acmemedical\security\CustomAuthenticationMechanism.class
 acmemedical\entity\Prescription.class
+acmemedical\rest\resource\MedicalCertificateResource.class
+acmemedical\rest\resource\PatientResource.class
 acmemedical\security\CustomIdentityStore.class
 acmemedical\entity\Patient.class
+acmemedical\rest\resource\MedicalTrainingResource.class
 acmemedical\entity\MedicalCertificate.class
 acmemedical\entity\PojoListener.class
 acmemedical\rest\resource\PhysicianResource.class

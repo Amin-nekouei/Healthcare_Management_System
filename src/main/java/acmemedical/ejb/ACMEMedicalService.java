@@ -362,8 +362,9 @@ public class ACMEMedicalService implements Serializable {
     public Patient updatePatient(int id, Patient updatingPatient) {
         Patient patientToBeUpdated = getPatientById(id);
         if (patientToBeUpdated != null) {
-            em.refresh(patientToBeUpdated);
-            em.merge(updatingPatient);
+            updatingPatient.setId(id);
+            updatingPatient.setVersion(patientToBeUpdated.getVersion());
+            patientToBeUpdated = em.merge(updatingPatient);
             em.flush();
         }
         return patientToBeUpdated;
@@ -373,7 +374,6 @@ public class ACMEMedicalService implements Serializable {
     public void deletePatientById(int id) {
         Patient patient = getPatientById(id);
         if (patient != null) {
-            em.refresh(patient);
             em.remove(patient);
         }
     }

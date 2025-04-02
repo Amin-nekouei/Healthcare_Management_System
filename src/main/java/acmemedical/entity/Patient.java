@@ -21,6 +21,9 @@ import jakarta.persistence.Table;
 
 import static acmemedical.utility.MyConstants.PARAM1;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @SuppressWarnings("unused")
 
@@ -34,6 +37,7 @@ import static acmemedical.utility.MyConstants.PARAM1;
 @AttributeOverride(name = "id", column = @Column(name = "patient_id"))
 @NamedQuery(name = Patient.FIND_BY_ID,
     query = "SELECT p FROM Patient p WHERE p.id = :" + PARAM1)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Patient extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -42,34 +46,42 @@ public class Patient extends PojoBase implements Serializable {
 	
 	// TODO PA03 - Add missing annotations.
 	@Column(name = "first_name", nullable = false)
+	@JsonProperty("first_name")
 	private String firstName;
 
 	// TODO PA04 - Add missing annotations.
 	@Column(name = "last_name", nullable = false)
+	@JsonProperty("last_name")
 	private String lastName;
 
 	// TODO PA05 - Add missing annotations.
 	@Column(name = "year_of_birth", nullable = false)
+	@JsonProperty("year_of_birth")
 	private int year;
 
 	// TODO PA06 - Add missing annotations.
 	@Column(name = "home_address", nullable = false)
+	@JsonProperty("home_address")
 	private String address;
 
 	// TODO PA07 - Add missing annotations.
 	@Column(name = "height_cm", nullable = false)
+	@JsonProperty("height_cm")
 	private int height;
 
 	// TODO PA08 - Add missing annotations.
 	@Column(name = "weight_kg", nullable = false)
+	@JsonProperty("weight_kg")
 	private int weight;
 
 	// TODO PA09 - Add missing annotations.
 	@Column(name = "smoker", nullable = false)
+	@JsonProperty("smoker")
 	private byte smoker;
 
 	// TODO PA10 - Add annotations for 1:M relation.  What should be the cascade and fetch types?
 	@OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonManagedReference
 	private Set<Prescription> prescriptions = new HashSet<>();
 
 	public Patient() {

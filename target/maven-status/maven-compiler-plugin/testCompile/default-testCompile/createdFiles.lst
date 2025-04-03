@@ -1,4 +1,5 @@
 acmemedical\MyObjectMapperProvider.class
+acmemedical\PBKDF2HashGenerator.class
+acmemedical\rest\resource\MedicalCertificateResourceTest.class
 acmemedical\TestACMEMedicalSystem$1.class
 acmemedical\TestACMEMedicalSystem.class
-acmemedical\PBKDF2HashGenerator.class

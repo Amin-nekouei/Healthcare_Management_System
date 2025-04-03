@@ -105,8 +105,13 @@ public class MedicalCertificateResource {
     @Path(RESOURCE_PATH_ID_PATH)
     public Response updateMedicalCertificate(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id, MedicalCertificate updatingMedicalCertificate) {
         LOG.debug("Updating medical certificate with id = {}", id);
+        System.out.println(">>> Received PUT: ID=" + id);
+System.out.println(">>> Payload signed = " + updatingMedicalCertificate.getSigned());
+System.out.println(">>> Payload owner = " + updatingMedicalCertificate.getOwner());
+
         MedicalCertificate updatedCertificate = service.updateMedicalCertificate(id, updatingMedicalCertificate);
         Response response = Response.ok(updatedCertificate).build();
+
         return response;
     }
 

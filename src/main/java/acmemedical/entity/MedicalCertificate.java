@@ -9,6 +9,8 @@ package acmemedical.entity;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.AttributeOverride;
@@ -91,7 +93,7 @@ private Physician owner;
 	public void setSigned(byte signed) {
 		this.signed = signed;
 	}
-
+	@JsonIgnore
 	public void setSigned(boolean signed) {
 		this.signed = (byte) (signed ? 0b0001 : 0b0000);
 	}

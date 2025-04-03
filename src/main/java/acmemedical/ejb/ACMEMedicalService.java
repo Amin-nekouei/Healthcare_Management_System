@@ -321,11 +321,12 @@ public class ACMEMedicalService implements Serializable {
     }
 
     @Transactional
-    public MedicalCertificate updateMedicalCertificate(int id, MedicalCertificate medicalCertificateWithUpdates) {
+    public MedicalCertificate updateMedicalCertificate(int id, MedicalCertificate updatingMedicalCertificate) {
         MedicalCertificate medicalCertificateToBeUpdated = getMedicalCertificateById(id);
         if (medicalCertificateToBeUpdated != null) {
-            em.refresh(medicalCertificateToBeUpdated);
-            em.merge(medicalCertificateWithUpdates);
+            updatingMedicalCertificate.setId(id);
+            updatingMedicalCertificate.setVersion(medicalCertificateToBeUpdated.getVersion());
+            medicalCertificateToBeUpdated= em.merge(updatingMedicalCertificate);
             em.flush();
         }
         return medicalCertificateToBeUpdated;

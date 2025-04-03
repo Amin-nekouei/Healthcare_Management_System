@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: acmemedical.rest.resource.MedicalCertificateResourceTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.566 s <<< FAILURE! - in acmemedical.rest.resource.MedicalCertificateResourceTest
+acmemedical.rest.resource.MedicalCertificateResourceTest.testUpdateMedicalCertificate  Time elapsed: 0.146 s  <<< ERROR!
+jakarta.ws.rs.ProcessingException: Error reading entity from input stream.
+	at acmemedical.rest.resource.MedicalCertificateResourceTest.testUpdateMedicalCertificate(MedicalCertificateResourceTest.java:99)
+Caused by: com.fasterxml.jackson.databind.JsonMappingException: Already had POJO for id (java.lang.Integer) [[ObjectId: key=1, type=com.fasterxml.jackson.databind.deser.impl.PropertyBasedObjectIdGenerator, scope=java.lang.Object]] (through reference chain: acmemedical.entity.MedicalCertificate["medicalTraining"]->acmemedical.entity.MedicalTraining["id"])
+	at acmemedical.rest.resource.MedicalCertificateResourceTest.testUpdateMedicalCertificate(MedicalCertificateResourceTest.java:99)
+Caused by: java.lang.IllegalStateException: Already had POJO for id (java.lang.Integer) [[ObjectId: key=1, type=com.fasterxml.jackson.databind.deser.impl.PropertyBasedObjectIdGenerator, scope=java.lang.Object]]
+	at acmemedical.rest.resource.MedicalCertificateResourceTest.testUpdateMedicalCertificate(MedicalCertificateResourceTest.java:99)
+

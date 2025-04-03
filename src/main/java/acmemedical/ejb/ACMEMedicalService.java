@@ -377,7 +377,52 @@ public class ACMEMedicalService implements Serializable {
             em.remove(patient);
         }
     }
-    
+    // Get all medicines
+public List<Medicine> getAllMedicines() {
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<Medicine> cq = cb.createQuery(Medicine.class);
+    cq.select(cq.from(Medicine.class));
+    return em.createQuery(cq).getResultList();
+}
+
+// Get medicine by ID
+public Medicine getMedicineById(int id) {
+    return em.find(Medicine.class, id);
+}
+
+// Create new medicine
+@Transactional
+public Medicine persistMedicine(Medicine newMedicine) {
+    em.persist(newMedicine);
+    return newMedicine;
+}
+
+// Update existing medicine
+@Transactional
+public Medicine updateMedicine(Medicine updatedMedicine) {
+    Medicine existingMedicine = getMedicineById(updatedMedicine.getId());
+    if (existingMedicine != null) {
+        existingMedicine.setMedicine(
+            updatedMedicine.getDrugName(),
+            updatedMedicine.getManufacturerName(),
+            updatedMedicine.getDosageInformation()
+        );
+        em.merge(existingMedicine);
+        em.flush();
+        return existingMedicine;
+    }
+    return null;
+}
+
+// Delete medicine
+@Transactional
+public void deleteMedicineById(int id) {
+    Medicine medicine = getMedicineById(id);
+    if (medicine != null) {
+        em.remove(medicine);
+    }
+}
+
     
     
 }

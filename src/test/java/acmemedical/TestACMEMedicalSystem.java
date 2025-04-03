@@ -81,6 +81,7 @@ public class TestACMEMedicalSystem {
     public void setUp() {
         Client client = ClientBuilder.newClient().register(MyObjectMapperProvider.class).register(new LoggingFeature());
         webTarget = client.target(uri);
+        
     }
 
     @Test

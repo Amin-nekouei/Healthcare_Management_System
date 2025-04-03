@@ -181,7 +181,7 @@ public class ACMEMedicalService implements Serializable {
                is not dangling
             */
             TypedQuery<SecurityUser> findUser = em.createNamedQuery("SecurityUser.FIND_BY_PHYSICIAN_ID", SecurityUser.class);
-            
+            findUser.setParameter("physicianId", id);
             SecurityUser sUser = findUser.getSingleResult();
             em.remove(sUser);
             em.remove(physician);

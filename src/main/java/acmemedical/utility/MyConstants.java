@@ -31,7 +31,7 @@ public interface MyConstants {
     public static final String APPLICATION_API_VERSION = "/api/v1";
     public static final String SLASH = "/";
     public static final String REST_APPLICATION_PATH = SLASH + "api" + SLASH + "v1";
-    public static final String APPLICATION_CONTEXT_ROOT = SLASH + "rest-acmemedical";
+    public static final String APPLICATION_CONTEXT_ROOT = SLASH + "rest-acmemedical-0.0.1-SNAPSHOT";
     public static final String RESOURCE_PATH_ID_ELEMENT =  "id";
     public static final String RESOURCE_PATH_ID_PATH =  "/{" + RESOURCE_PATH_ID_ELEMENT + "}";
     public static final String CREDENTIAL_RESOURCE_NAME = "credential";

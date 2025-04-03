@@ -107,10 +107,11 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 	public Medicine getMedicine() {
 		return medicine;
 	}
-
-	public void setMedicine(Medicine medicine) {
-		this.medicine = medicine;
+	public Medicine setMedicine(Medicine m) {
+		return this.medicine = m;
 	}
+
+
 
 	public int getNumberOfRefills() {
 		return numberOfRefills;

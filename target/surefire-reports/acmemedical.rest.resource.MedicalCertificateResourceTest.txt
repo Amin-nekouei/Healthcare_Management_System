@@ -1,12 +1,22 @@
 -------------------------------------------------------------------------------
 Test set: acmemedical.rest.resource.MedicalCertificateResourceTest
 -------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.566 s <<< FAILURE! - in acmemedical.rest.resource.MedicalCertificateResourceTest
-acmemedical.rest.resource.MedicalCertificateResourceTest.testUpdateMedicalCertificate  Time elapsed: 0.146 s  <<< ERROR!
-jakarta.ws.rs.ProcessingException: Error reading entity from input stream.
-	at acmemedical.rest.resource.MedicalCertificateResourceTest.testUpdateMedicalCertificate(MedicalCertificateResourceTest.java:99)
-Caused by: com.fasterxml.jackson.databind.JsonMappingException: Already had POJO for id (java.lang.Integer) [[ObjectId: key=1, type=com.fasterxml.jackson.databind.deser.impl.PropertyBasedObjectIdGenerator, scope=java.lang.Object]] (through reference chain: acmemedical.entity.MedicalCertificate["medicalTraining"]->acmemedical.entity.MedicalTraining["id"])
-	at acmemedical.rest.resource.MedicalCertificateResourceTest.testUpdateMedicalCertificate(MedicalCertificateResourceTest.java:99)
-Caused by: java.lang.IllegalStateException: Already had POJO for id (java.lang.Integer) [[ObjectId: key=1, type=com.fasterxml.jackson.databind.deser.impl.PropertyBasedObjectIdGenerator, scope=java.lang.Object]]
-	at acmemedical.rest.resource.MedicalCertificateResourceTest.testUpdateMedicalCertificate(MedicalCertificateResourceTest.java:99)
+Tests run: 3, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.644 s <<< FAILURE! - in acmemedical.rest.resource.MedicalCertificateResourceTest
+acmemedical.rest.resource.MedicalCertificateResourceTest.testGetMedicalCertificateById  Time elapsed: 0.488 s  <<< ERROR!
+jakarta.ws.rs.ProcessingException: java.net.ConnectException: Connection refused: connect
+	at acmemedical.rest.resource.MedicalCertificateResourceTest.testGetMedicalCertificateById(MedicalCertificateResourceTest.java:86)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at acmemedical.rest.resource.MedicalCertificateResourceTest.testGetMedicalCertificateById(MedicalCertificateResourceTest.java:86)
+
+acmemedical.rest.resource.MedicalCertificateResourceTest.testGetAllMedicalCertificates  Time elapsed: 0.031 s  <<< ERROR!
+jakarta.ws.rs.ProcessingException: java.net.ConnectException: Connection refused: connect
+	at acmemedical.rest.resource.MedicalCertificateResourceTest.testGetAllMedicalCertificates(MedicalCertificateResourceTest.java:75)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at acmemedical.rest.resource.MedicalCertificateResourceTest.testGetAllMedicalCertificates(MedicalCertificateResourceTest.java:75)
+
+acmemedical.rest.resource.MedicalCertificateResourceTest.testUpdateMedicalCertificate  Time elapsed: 0.03 s  <<< ERROR!
+jakarta.ws.rs.ProcessingException: java.net.ConnectException: Connection refused: connect
+	at acmemedical.rest.resource.MedicalCertificateResourceTest.testUpdateMedicalCertificate(MedicalCertificateResourceTest.java:98)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at acmemedical.rest.resource.MedicalCertificateResourceTest.testUpdateMedicalCertificate(MedicalCertificateResourceTest.java:98)
 

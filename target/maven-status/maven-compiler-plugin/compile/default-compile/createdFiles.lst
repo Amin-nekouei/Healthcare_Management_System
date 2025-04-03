@@ -28,6 +28,7 @@ acmemedical\entity\Prescription.class
 acmemedical\rest\resource\MedicalCertificateResource.class
 acmemedical\rest\resource\PatientResource.class
 acmemedical\security\CustomIdentityStore.class
+acmemedical\rest\resource\PrescriptionResource.class
 acmemedical\entity\Patient.class
 acmemedical\rest\resource\MedicalTrainingResource.class
 acmemedical\entity\MedicalCertificate.class

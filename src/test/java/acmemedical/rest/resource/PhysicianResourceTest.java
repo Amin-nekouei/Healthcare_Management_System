@@ -141,4 +141,26 @@ class PhysicianResourceTest {
         Medicine updated = response.readEntity(Medicine.class);
         assertEquals("Aspirin", updated.getDrugName());
     }
+    @Test
+void testDeletePhysicianById() {
+    // Delete the physician created in @BeforeEach
+    Response deleteResponse = webTarget
+        .register(adminAuth)
+        .path("physician/" + createdPhysicianId)
+        .request()
+        .delete();
+
+    assertEquals(204, deleteResponse.getStatus()); // noContent()
+
+    Response getResponse = webTarget
+        .register(adminAuth)
+        .path("physician/" + createdPhysicianId)
+        .request()
+        .get();
+
+    assertEquals(404, getResponse.getStatus());
+
+    createdPhysicianId = null;
+}
+
 }

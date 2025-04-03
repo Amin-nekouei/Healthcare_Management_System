@@ -121,6 +121,27 @@ private Physician physician;
         Patient updated = response.readEntity(Patient.class);
         assertEquals("Updated", updated.getFirstName());
     }
+    @Test
+void testDeletePatientById() {
+    // Delete the patient created in @BeforeEach
+    Response deleteResponse = webTarget
+        .register(adminAuth)
+        .path("patient/" + createdPatientId)
+        .request()
+        .delete();
+
+    assertEquals(200, deleteResponse.getStatus());
+
+    // Verify the patient is no longer accessible
+    Response getResponse = webTarget
+        .register(adminAuth)
+        .path("patient/" + createdPatientId)
+        .request()
+        .get();
+
+    assertEquals(404, getResponse.getStatus());
+}
+
 
     // @Test
     // void testAddPrescriptionToPatient() {

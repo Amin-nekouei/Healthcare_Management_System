@@ -100,12 +100,28 @@ public class MedicalSchoolResource {
     public Response addMedicalTrainingToMedicalSchool(@PathParam("medicalSchoolId") int msId, MedicalTraining newMedicalTraining) {
         LOG.debug("Adding a new MedicalTraining to medical school with id = {}", msId);
         
+        // Get the existing medical school
         MedicalSchool ms = service.getMedicalSchoolById(msId);
-        newMedicalTraining.setMedicalSchool(ms);
-        ms.getMedicalTrainings().add(newMedicalTraining);
+        if (ms == null) {
+            return Response.status(Status.NOT_FOUND)
+                    .entity("Medical school not found with ID: " + msId)
+                    .build();
+        }
+        
+        // Create a new MedicalTraining and set its properties
+        MedicalTraining medicalTraining = new MedicalTraining();
+        medicalTraining.setDurationAndStatus(newMedicalTraining.getDurationAndStatus());
+        
+        // Set the managed medical school
+        medicalTraining.setMedicalSchool(ms);
+        
+        // Add the training to the school's collection
+        ms.getMedicalTrainings().add(medicalTraining);
+        
+        // Update the school to persist the new training
         service.updateMedicalSchool(msId, ms);
         
-        return Response.ok(sc).build();
+        return Response.ok(medicalTraining).build();
     }
 
     @RolesAllowed({ADMIN_ROLE, USER_ROLE})

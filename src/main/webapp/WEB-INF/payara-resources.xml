@@ -8,7 +8,7 @@
 		<property name="serverName" value="localhost"></property>
 		<property name="user" value="cst8277"></property>
 		<property name="password" value="8277"></property>
-		<property name="portNumber" value="3306"></property>
+		<property name="portNumber" value="3308"></property>
 		<property name="useSSL" value="false"></property>
 		<property name="allowPublicKeyRetrieval" value="true"></property>
 		<property name="createDatabaseIfNotExist" value="true"></property>

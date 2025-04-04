@@ -13,6 +13,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -40,6 +41,7 @@ import jakarta.persistence.Table;
 //MedicalSchool has subclasses PublicSchool and PrivateSchool.  Look at Week 9 slides for InheritanceType.
 //Do we need a mapped super class?  If so, which one?
 //Add in JSON annotations to indicate different sub-classes of MedicalSchool
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity (name = "MedicalSchool") // TODO MS01 - Mark as JPA Entity
 @Table(name = "medical_school")
 @AttributeOverride(name = "id", column = @Column(name = "school_id"))
@@ -54,9 +56,9 @@ import jakarta.persistence.Table;
 	@NamedQuery(name = "MedicalSchool.ALL_MEDICAL_SCHOOLS_QUERY_NAME",
             query = "SELECT distinct ms FROM MedicalSchool ms LEFT JOIN FETCH ms.medicalTrainings"),
     @NamedQuery(name = "MedicalSchool.IS_DUPLICATE_QUERY_NAME", 
-                query = "SELECT COUNT(ms) FROM MedicalSchool ms WHERE ms.name = :name"),
+                query = "SELECT COUNT(ms) FROM MedicalSchool ms WHERE ms.name = :param1"),
     @NamedQuery(name = "MedicalSchool.SPECIFIC_MEDICAL_SCHOOL_QUERY_NAME", 
-                query = "SELECT ms FROM MedicalSchool ms WHERE ms.id = :id")
+                query = "SELECT ms FROM MedicalSchool ms WHERE ms.id = :param1")
 })
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public abstract class MedicalSchool extends PojoBase implements Serializable {

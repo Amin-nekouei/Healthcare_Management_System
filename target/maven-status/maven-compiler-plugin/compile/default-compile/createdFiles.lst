@@ -5,6 +5,7 @@ acmemedical\entity\PojoBase.class
 acmemedical\rest\ConfigureJacksonObjectMapper.class
 acmemedical\rest\resource\MedicalSchoolResource.class
 acmemedical\entity\PublicSchool.class
+acmemedical\rest\GlobalExceptionMapper.class
 acmemedical\entity\MedicalSchool.class
 acmemedical\entity\SecurityUser.class
 acmemedical\utility\MyConstants.class
@@ -28,6 +29,7 @@ acmemedical\entity\Prescription.class
 acmemedical\rest\resource\MedicalCertificateResource.class
 acmemedical\rest\resource\PatientResource.class
 acmemedical\security\CustomIdentityStore.class
+acmemedical\rest\resource\PrescriptionResource.class
 acmemedical\entity\Patient.class
 acmemedical\rest\resource\MedicalTrainingResource.class
 acmemedical\entity\MedicalCertificate.class

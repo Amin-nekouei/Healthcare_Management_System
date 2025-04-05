@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
@@ -42,6 +45,7 @@ import jakarta.persistence.Transient;
 @AttributeOverride(name = "id", column = @Column(name = "medicine_id"))
 //Hint - PojoBase is inherited by any entity with integer as their primary key.
 //Hint - PojoBaseCompositeKey is inherited by any entity with a composite key as their primary key.
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Medicine extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -82,7 +86,7 @@ public class Medicine extends PojoBase implements Serializable {
 	public Medicine() {
 		super();
 	}
-	
+
 	public Medicine(String drugName, String manufacturerName, String dosageInformation, Set<Prescription> prescriptions) {
 		this();
 		this.drugName = drugName;

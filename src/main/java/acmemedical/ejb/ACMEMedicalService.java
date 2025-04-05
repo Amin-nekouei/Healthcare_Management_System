@@ -445,58 +445,67 @@ public void deleteMedicineById(int id) {
 
     @Transactional
     public Prescription persistPrescription(Prescription prescription) {
-        if (prescription == null || prescription.getPatient() == null || 
-            prescription.getPhysician() == null || prescription.getMedicine() == null) {
-            LOG.debug("Prescription or its required relationships are null");
+        if (prescription == null) {
+            LOG.debug("Prescription is null");
             return null;
         }
-
-        Integer patientId = prescription.getPatient().getId();
-        Integer physicianId = prescription.getPhysician().getId();
-        Integer medicineId = prescription.getMedicine().getId();
-
+    
+        Integer patientId = null;
+        Integer physicianId = null;
+        Integer medicineId = null;
+    
+        if (prescription.getPatient() != null) {
+            patientId = prescription.getPatient().getId();
+        } else if (prescription.getId() != null) {
+            patientId = prescription.getId().getPatientId();
+        }
+    
+        if (prescription.getPhysician() != null) {
+            physicianId = prescription.getPhysician().getId();
+        } else if (prescription.getId() != null) {
+            physicianId = prescription.getId().getPhysicianId();
+        }
+    
+        if (prescription.getMedicine() != null) {
+            medicineId = prescription.getMedicine().getId();
+        }
+    
         if (patientId == null || physicianId == null || medicineId == null) {
-            LOG.debug("One or more IDs are null: patientId={}, physicianId={}, medicineId={}", 
-                     patientId, physicianId, medicineId);
+            LOG.debug("Missing required IDs: patientId={}, physicianId={}, medicineId={}", 
+                      patientId, physicianId, medicineId);
             return null;
         }
-
-        // Get the referenced entities
+    
+        // Lookup references
         Patient patient = em.find(Patient.class, patientId);
         Physician physician = em.find(Physician.class, physicianId);
         Medicine medicine = em.find(Medicine.class, medicineId);
-        
+    
         if (patient == null || physician == null || medicine == null) {
-            LOG.debug("One or more entities not found: patient={}, physician={}, medicine={}", 
-                     patient != null, physician != null, medicine != null);
+            LOG.debug("Entities not found: patient={}, physician={}, medicine={}",
+                      patient != null, physician != null, medicine != null);
             return null;
         }
-
-        // Initialize composite key
+    
         PrescriptionPK id = new PrescriptionPK();
         id.setPatientId(patientId);
         id.setPhysicianId(physicianId);
-
-        // Check if prescription already exists
+    
         if (em.find(Prescription.class, id) != null) {
             LOG.debug("Prescription already exists for patient={} and physician={}", 
                      patientId, physicianId);
             return null;
         }
-
-        // Set up relationships
+    
         prescription.setId(id);
         prescription.setPatient(patient);
         prescription.setPhysician(physician);
         prescription.setMedicine(medicine);
-        
+    
         try {
             em.persist(prescription);
-            
-            // Update bidirectional relationships
             patient.getPrescriptions().add(prescription);
             physician.getPrescriptions().add(prescription);
-            
             em.flush();
             return prescription;
         } catch (Exception e) {
@@ -504,6 +513,7 @@ public void deleteMedicineById(int id) {
             return null;
         }
     }
+    
 
     @Transactional
     public Prescription updatePrescription(int patientId, int physicianId, Prescription updatingPrescription) {

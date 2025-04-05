@@ -11,6 +11,7 @@ C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main
 C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main\java\acmemedical\entity\Prescription.java
 C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main\java\acmemedical\rest\ClientErrorExceptionMapper.java
 C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main\java\acmemedical\rest\resource\PatientResource.java
+C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main\java\acmemedical\rest\resource\PrescriptionResource.java
 C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main\java\acmemedical\rest\resource\MedicalCertificateResource.java
 C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main\java\acmemedical\entity\DurationAndStatus.java
 C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main\java\acmemedical\rest\ConfigureJacksonObjectMapper.java
@@ -28,6 +29,7 @@ C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main
 C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main\java\acmemedical\rest\RestConfig.java
 C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main\java\acmemedical\rest\serializer\SecurityRoleSerializer.java
 C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main\java\acmemedical\entity\SecurityRole.java
+C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main\java\acmemedical\rest\GlobalExceptionMapper.java
 C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main\java\acmemedical\entity\MedicalCertificate.java
 C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main\java\acmemedical\rest\resource\MedicineResource.java
 C:\Users\aminn\OneDrive\Documents\GitHub\java-group-project-winter-2025\src\main\java\acmemedical\entity\PojoCompositeListener.java

@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------------
+Test set: acmemedical.rest.resource.PrescriptionResourceTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 4, Skipped: 0, Time elapsed: 1.53 s <<< FAILURE! - in acmemedical.rest.resource.PrescriptionResourceTest
+acmemedical.rest.resource.PrescriptionResourceTest.testGetPrescriptionById  Time elapsed: 1.117 s  <<< ERROR!
+jakarta.ws.rs.ProcessingException: java.net.ConnectException: Connection refused: connect
+	at acmemedical.rest.resource.PrescriptionResourceTest.setUp(PrescriptionResourceTest.java:60)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at acmemedical.rest.resource.PrescriptionResourceTest.setUp(PrescriptionResourceTest.java:60)
+
+acmemedical.rest.resource.PrescriptionResourceTest.testDeletePrescription  Time elapsed: 0.036 s  <<< ERROR!
+jakarta.ws.rs.ProcessingException: java.net.ConnectException: Connection refused: connect
+	at acmemedical.rest.resource.PrescriptionResourceTest.setUp(PrescriptionResourceTest.java:60)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at acmemedical.rest.resource.PrescriptionResourceTest.setUp(PrescriptionResourceTest.java:60)
+
+acmemedical.rest.resource.PrescriptionResourceTest.testGetAllPrescriptions  Time elapsed: 0.032 s  <<< ERROR!
+jakarta.ws.rs.ProcessingException: java.net.ConnectException: Connection refused: connect
+	at acmemedical.rest.resource.PrescriptionResourceTest.setUp(PrescriptionResourceTest.java:60)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at acmemedical.rest.resource.PrescriptionResourceTest.setUp(PrescriptionResourceTest.java:60)
+
+acmemedical.rest.resource.PrescriptionResourceTest.testUpdatePrescription  Time elapsed: 0.035 s  <<< ERROR!
+jakarta.ws.rs.ProcessingException: java.net.ConnectException: Connection refused: connect
+	at acmemedical.rest.resource.PrescriptionResourceTest.setUp(PrescriptionResourceTest.java:60)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at acmemedical.rest.resource.PrescriptionResourceTest.setUp(PrescriptionResourceTest.java:60)
+

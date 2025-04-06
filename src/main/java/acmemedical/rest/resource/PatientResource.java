@@ -102,16 +102,23 @@ public class PatientResource {
     }
 
     @POST
-    @RolesAllowed({ADMIN_ROLE})
-    @Path("/{patientId}/prescription")
-    public Response addPrescriptionToPatient(@PathParam("patientId") int patientId, Prescription newPrescription) {
-        LOG.debug("Adding a new prescription to patient with id = {}", patientId);
-        
-        Patient patient = service.getPatientById(patientId);
-        newPrescription.setPatient(patient);
-        patient.getPrescriptions().add(newPrescription);
-        service.updatePatient(patientId, patient);
-        
-        return Response.status(Response.Status.CREATED).entity(patient).build();
+@RolesAllowed({ADMIN_ROLE})
+@Path("/{patientId}/prescription")
+public Response addPrescriptionToPatient(@PathParam("patientId") int patientId, Prescription newPrescription) {
+    LOG.debug("Adding a new prescription to patient with id = {}", patientId);
+
+    // Set the patient explicitly (already done here)
+    Patient patient = service.getPatientById(patientId);
+    newPrescription.setPatient(patient);
+
+    // Use the service method that handles composite keys and associations
+    Prescription persisted = service.persistPrescription(newPrescription);
+    
+    if (persisted == null) {
+        return Response.status(Response.Status.BAD_REQUEST).entity("Prescription could not be added.").build();
     }
+
+    return Response.ok(persisted).build();
+}
+
 }

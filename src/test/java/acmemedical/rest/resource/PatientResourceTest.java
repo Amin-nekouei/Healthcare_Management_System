@@ -171,7 +171,7 @@ void testDeletePatientById() {
 
 @Test
 void testAddPrescriptionToPatient() {
-    // Create a medicine first
+    // Step 1: Create a medicine
     Medicine medicine = new Medicine();
     medicine.setDrugName("Amoxicillin");
     medicine.setManufacturerName("Pharma Inc");
@@ -183,19 +183,31 @@ void testAddPrescriptionToPatient() {
         .request(MediaType.APPLICATION_JSON)
         .post(Entity.entity(medicine, MediaType.APPLICATION_JSON));
 
-    assertEquals(200, medResponse.getStatus());
+    assertEquals(201, medResponse.getStatus()); // assuming /medicine POST returns 201
     int medicineId = medResponse.readEntity(Medicine.class).getId();
 
-    // Construct the prescription
+    // Step 2: Fetch managed Medicine entity
+    Response getMedResponse = webTarget
+        .register(adminAuth)
+        .path("medicine/" + medicineId)
+        .request()
+        .get();
+
+    assertEquals(200, getMedResponse.getStatus());
+    Medicine managedMedicine = getMedResponse.readEntity(Medicine.class);
+
+    // Step 3: Reference existing physician
+    Physician refPhysician = new Physician();
+    refPhysician.setId(createdPhysicianId);
+
+    // Step 4: Construct prescription
     Prescription prescription = new Prescription();
     prescription.setPrescriptionInformation("Take twice daily");
     prescription.setNumberOfRefills(2);
+    prescription.setMedicine(managedMedicine);       // ✅ required managed entity
+    prescription.setPhysician(refPhysician);         // ✅ required for ID generation
 
-    Medicine medRef = new Medicine();
-    medRef.setId(medicineId);
-    prescription.setMedicine(medRef);
-
-    // Add prescription to patient via /patient/{id}/prescription
+    // Step 5: Send POST to /patient/{id}/prescription
     Response response = webTarget
         .register(adminAuth)
         .path("patient/" + createdPatientId + "/prescription")
@@ -204,14 +216,19 @@ void testAddPrescriptionToPatient() {
 
     assertEquals(201, response.getStatus());
 
+    // Step 6: Validate response
     Patient updatedPatient = response.readEntity(Patient.class);
     assertNotNull(updatedPatient.getPrescriptions());
     assertThat(updatedPatient.getPrescriptions(), hasItem(
         hasProperty("prescriptionInformation", containsString("Take twice daily"))
     ));
 
-    // Cleanup
-    webTarget.register(adminAuth).path("medicine/" + medicineId).request().delete();
+    // Step 7: Cleanup
+    webTarget
+        .register(adminAuth)
+        .path("medicine/" + medicineId)
+        .request()
+        .delete();
 }
 
 

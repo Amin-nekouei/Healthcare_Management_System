@@ -118,10 +118,23 @@ public class PhysicianResource {
         response = Response.ok(medicine).build();
         return response;
     }
+
+    @PUT
+    @RolesAllowed({ADMIN_ROLE})
+    @Path(RESOURCE_PATH_ID_PATH)
+    public Response updatePhysician(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id, Physician updatingPhysician) {
+        LOG.debug("Updating physician with id = {}", id);
+        Physician updatedPhysician = service.updatePhysicianById(id, updatingPhysician);
+        if (updatedPhysician == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        return Response.ok(updatedPhysician).build();
+    }
+
     @DELETE
-@Path(RESOURCE_PATH_ID_PATH)
-@RolesAllowed({ADMIN_ROLE})
-public Response deletePhysicianById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
+    @Path(RESOURCE_PATH_ID_PATH)
+    @RolesAllowed({ADMIN_ROLE})
+    public Response deletePhysicianById(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
     LOG.debug("Attempting to delete physician with ID: {}", id);
     
     Physician physician = service.getPhysicianById(id);

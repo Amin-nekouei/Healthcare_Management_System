@@ -308,14 +308,23 @@ public void deletePhysicianById(int id) {
         MedicalTraining medicalTraining = getMedicalTrainingById(id);
         if (medicalTraining != null) {
             em.refresh(medicalTraining);
+    
+            // Break bidirectional link with MedicalCertificate
             if (medicalTraining.getCertificate() != null) {
                 medicalTraining.getCertificate().setMedicalTraining(null);
             }
+    
+            // ✅ Break reference to MedicalSchool to prevent dangling Hibernate proxy
+            if (medicalTraining.getMedicalSchool() != null) {
+                medicalTraining.setMedicalSchool(null);
+            }
+    
             em.remove(medicalTraining);
             return medicalTraining;
         }
         return null;
     }
+    
     
     // MedicalCertificate CRUD operations
     public List<MedicalCertificate> getAllMedicalCertificates() {

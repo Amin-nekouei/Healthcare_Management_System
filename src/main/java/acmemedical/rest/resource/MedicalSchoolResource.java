@@ -107,21 +107,40 @@ public class MedicalSchoolResource {
                     .entity("Medical school not found with ID: " + msId)
                     .build();
         }
+          // Set the managed medical school
+    newMedicalTraining.setMedicalSchool(ms);
+    
+    // Add the training to the school's collection
+    ms.getMedicalTrainings().add(newMedicalTraining);
+    
+    try {
+        MedicalTraining createdTraining = service.mergeMedicalTraining(newMedicalTraining);
+        return Response.status(Status.CREATED).entity(createdTraining).build();
+    } catch (Exception e) {
+        LOG.error("Error merge medical training: {}", e.getMessage());
+        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                .entity("Error persisting medical training: " + e.getMessage())
+                .build();
+    }
+        //newMedicalTraining.setMedicalSchool(ms);
+       // ms.getMedicalTrainings().add(newMedicalTraining);
+       // service.updateMedicalSchool(msId, ms);
+
         
         // Create a new MedicalTraining and set its properties
-        MedicalTraining medicalTraining = new MedicalTraining();
-        medicalTraining.setDurationAndStatus(newMedicalTraining.getDurationAndStatus());
+       // MedicalTraining medicalTraining = new MedicalTraining();
+        //medicalTraining.setDurationAndStatus(newMedicalTraining.getDurationAndStatus());
         
         // Set the managed medical school
-        medicalTraining.setMedicalSchool(ms);
+        //medicalTraining.setMedicalSchool(ms);
         
         // Add the training to the school's collection
-        ms.getMedicalTrainings().add(medicalTraining);
+        //ms.getMedicalTrainings().add(medicalTraining);
         
         // Update the school to persist the new training
-        service.updateMedicalSchool(msId, ms);
+        //service.updateMedicalSchool(msId, ms);
         
-        return Response.ok(medicalTraining).build();
+        //return Response.ok(ms).build();
     }
 
     @RolesAllowed({ADMIN_ROLE, USER_ROLE})

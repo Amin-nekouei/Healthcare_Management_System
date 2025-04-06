@@ -99,28 +99,39 @@ public class ACMEMedicalService implements Serializable {
 
     @Transactional
     public void buildUserForNewPhysician(Physician newPhysician) {
-        SecurityUser userForNewPhysician = new SecurityUser();
-        userForNewPhysician.setUsername(
-            DEFAULT_USER_PREFIX + "_" + newPhysician.getFirstName() + "." + newPhysician.getLastName());
-        Map<String, String> pbAndjProperties = new HashMap<>();
-        pbAndjProperties.put(PROPERTY_ALGORITHM, DEFAULT_PROPERTY_ALGORITHM);
-        pbAndjProperties.put(PROPERTY_ITERATIONS, DEFAULT_PROPERTY_ITERATIONS);
-        pbAndjProperties.put(PROPERTY_SALT_SIZE, DEFAULT_SALT_SIZE);
-        pbAndjProperties.put(PROPERTY_KEY_SIZE, DEFAULT_KEY_SIZE);
-        pbAndjPasswordHash.initialize(pbAndjProperties);
-        String pwHash = pbAndjPasswordHash.generate(DEFAULT_USER_PASSWORD.toCharArray());
-        userForNewPhysician.setPwHash(pwHash);
-        userForNewPhysician.setPhysician(newPhysician);
-        
-        /* TODO ACMECS01 - Use NamedQuery on SecurityRole to find USER_ROLE */ 
-        TypedQuery<SecurityRole> query = em.createNamedQuery(SecurityRole.FIND_BY_NAME, SecurityRole.class);
-        query.setParameter("name", USER_ROLE);
-        SecurityRole userRole = query.getSingleResult();
-        
-        userForNewPhysician.getRoles().add(userRole);
-        userRole.getUsers().add(userForNewPhysician);
-        em.persist(userForNewPhysician);
+        try {
+            LOG.debug("Building SecurityUser for Physician: {}", newPhysician.getId());
+    
+            SecurityUser userForNewPhysician = new SecurityUser();
+            userForNewPhysician.setUsername("user_" + newPhysician.getFirstName() + "." + newPhysician.getLastName());
+            
+            Map<String, String> props = new HashMap<>();
+            props.put(PROPERTY_ALGORITHM, DEFAULT_PROPERTY_ALGORITHM);
+            props.put(PROPERTY_ITERATIONS, DEFAULT_PROPERTY_ITERATIONS);
+            props.put(PROPERTY_SALT_SIZE, DEFAULT_SALT_SIZE);
+            props.put(PROPERTY_KEY_SIZE, DEFAULT_KEY_SIZE);
+            pbAndjPasswordHash.initialize(props);
+            
+            String pwHash = pbAndjPasswordHash.generate(DEFAULT_USER_PASSWORD.toCharArray());
+            userForNewPhysician.setPwHash(pwHash);
+            userForNewPhysician.setPhysician(newPhysician);
+            
+            TypedQuery<SecurityRole> query = em.createNamedQuery(SecurityRole.FIND_BY_NAME, SecurityRole.class);
+            query.setParameter("name", USER_ROLE);
+            SecurityRole userRole = query.getSingleResult();
+            
+            userForNewPhysician.getRoles().add(userRole);
+            userRole.getUsers().add(userForNewPhysician);
+    
+            LOG.debug("Persisting SecurityUser: {}", userForNewPhysician.getUsername());
+    
+            em.persist(userForNewPhysician);
+        } catch (Exception e) {
+            LOG.error("Error in buildUserForNewPhysician: {}", e.getMessage(), e);
+            throw e;
+        }
     }
+    
 
     @Transactional
     public Medicine setMedicineForPhysicianPatient(int physicianId, int patientId, Medicine newMedicine) {
@@ -171,22 +182,24 @@ public class ACMEMedicalService implements Serializable {
      * @param id - physician id to delete
      */
     @Transactional
-    public void deletePhysicianById(int id) {
-        Physician physician = getPhysicianById(id);
-        if (physician != null) {
-            em.refresh(physician);
+public void deletePhysicianById(int id) {
+    Physician physician = getPhysicianById(id);
+    if (physician != null) {
+        em.refresh(physician);
 
-            /* TODO ACMECS02 - Use NamedQuery on SecurityRole to find this related Student
-               so that when we remove it, the relationship from SECURITY_USER table
-               is not dangling
-            */
-            TypedQuery<SecurityUser> findUser = em.createNamedQuery("SecurityUser.FIND_BY_PHYSICIAN_ID", SecurityUser.class);
-            findUser.setParameter("physicianId", id);
-            SecurityUser sUser = findUser.getSingleResult();
-            em.remove(sUser);
-            em.remove(physician);
+        TypedQuery<SecurityUser> findUsers = em.createNamedQuery("SecurityUser.FIND_BY_PHYSICIAN_ID", SecurityUser.class);
+        findUsers.setParameter("physicianId", id);
+
+        List<SecurityUser> users = findUsers.getResultList();
+
+        for (SecurityUser user : users) {
+            em.remove(user);
         }
+
+        em.remove(physician);
     }
+}
+    
     
     public List<MedicalSchool> getAllMedicalSchools() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -263,9 +276,13 @@ public class ACMEMedicalService implements Serializable {
         return medicalSchoolToBeUpdated;
     }
     
+    public MedicalTraining mergeMedicalTraining(MedicalTraining medicalTraining) {
+        return em.merge(medicalTraining);
+    }
     @Transactional
     public MedicalTraining persistMedicalTraining(MedicalTraining newMedicalTraining) {
-        em.persist(newMedicalTraining);
+        //em.persist(newMedicalTraining);
+        em.merge(newMedicalTraining);
         return newMedicalTraining;
     }
     
@@ -533,9 +550,36 @@ public void deleteMedicineById(int id) {
         id.setPatientId(patientId);
         id.setPhysicianId(physicianId);
         Prescription prescription = em.find(Prescription.class, id);
+    
         if (prescription != null) {
+            em.refresh(prescription);
+    
+            deleteSecurityUsersByPhysicianId(physicianId);
+    
+            if (prescription.getPatient() != null) {
+                prescription.getPatient().getPrescriptions().remove(prescription);
+            }
+    
+            if (prescription.getPhysician() != null) {
+                prescription.getPhysician().getPrescriptions().remove(prescription);
+            }
+    
             em.remove(prescription);
         }
     }
+    
+    
+@Transactional
+public void deleteSecurityUsersByPhysicianId(int physicianId) {
+    List<SecurityUser> users = em.createNamedQuery("SecurityUser.FIND_BY_PHYSICIAN_ID", SecurityUser.class)
+        .setParameter("physicianId", physicianId)
+        .getResultList();
+
+    for (SecurityUser user : users) {
+        user.getRoles().clear(); // Remove links from join table
+        em.flush(); // Force delete of join table rows
+        em.remove(em.contains(user) ? user : em.merge(user));
+    }
+}
     
 }

@@ -22,7 +22,9 @@ import jakarta.persistence.Table;
 import static acmemedical.utility.MyConstants.PARAM1;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -39,7 +41,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @NamedQuery(name = Patient.FIND_BY_ID,
     query = "SELECT p FROM Patient p WHERE p.id = :" + PARAM1)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Patient extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -84,6 +86,7 @@ public class Patient extends PojoBase implements Serializable {
 
 	// TODO PA10 - Add annotations for 1:M relation.  What should be the cascade and fetch types?
 	@OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+@JsonManagedReference
 	private Set<Prescription> prescriptions = new HashSet<>();
 
 	public Patient() {

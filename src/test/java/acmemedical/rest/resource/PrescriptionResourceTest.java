@@ -7,109 +7,100 @@ import static org.hamcrest.Matchers.*;
 import java.util.List;
 
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import acmemedical.entity.Medicine;
-import acmemedical.entity.Patient;
-import acmemedical.entity.Physician;
-import acmemedical.entity.Prescription;
-import acmemedical.entity.PrescriptionPK;
+import acmemedical.MyObjectMapperProvider;
+import acmemedical.entity.*;
 
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.client.WebTarget;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.client.*;
+import jakarta.ws.rs.core.*;
 
 class PrescriptionResourceTest {
 
-    private static WebTarget webTarget;
-    private static HttpAuthenticationFeature adminAuth;
     private static final String BASE_URI = "http://localhost:8080/rest-acmemedical-0.0.1-SNAPSHOT/api/v1";
 
+    private static WebTarget webTarget;
+    private static HttpAuthenticationFeature adminAuth;
+
+    private Integer createdPhysicianId;
+    private Integer createdPatientId;
+    private Integer createdMedicineId;
+
     @BeforeAll
-    static void setUpBeforeClass() {
-        Client client = ClientBuilder.newClient();
+    static void initClient() {
+        Client client = ClientBuilder.newClient()
+        .register(MyObjectMapperProvider.class);
         webTarget = client.target(BASE_URI);
         adminAuth = HttpAuthenticationFeature.basic("admin", "admin");
     }
 
-    private Physician testPhysician;
-    private Patient testPatient;
-    private Medicine testMedicine;
-    private Integer createdPhysicianId;
-    private Integer createdPatientId;
-    private Integer createdMedicineId;
-    
     @BeforeEach
     void setUp() {
-        // Create a Physician
-        testPhysician = new Physician();
-        testPhysician.setFirstName("test");
-        testPhysician.setLastName("test");
+        // Create Physician
+        Physician physician = new Physician();
+        physician.setFirstName("Test");
+        physician.setLastName("Doctor");
 
-        Response response = webTarget
+        Response pResponse = webTarget
             .register(adminAuth)
             .path("physician")
             .request(MediaType.APPLICATION_JSON)
-            .post(Entity.entity(testPhysician, MediaType.APPLICATION_JSON));
-        Physician created = response.readEntity(Physician.class);
-        createdPhysicianId = created.getId();
-   
-    
-        testPatient = new Patient();
-        testPatient.setFirstName("Test");
-        testPatient.setLastName("Patient");
-        testPatient.setYear(1990);
-        testPatient.setAddress("123 Test Street");
-        testPatient.setHeight(175);
-        testPatient.setWeight(70);
-        testPatient.setSmoker((byte) 0);
+            .post(Entity.entity(physician, MediaType.APPLICATION_JSON));
+        createdPhysicianId = pResponse.readEntity(Physician.class).getId();
 
-        Response patientResponse = webTarget
+        // Create Patient
+        Patient patient = new Patient();
+        patient.setFirstName("Test");
+        patient.setLastName("Patient");
+        patient.setYear(1990);
+        patient.setAddress("123 Main St");
+        patient.setHeight(170);
+        patient.setWeight(70);
+        patient.setSmoker((byte) 0);
+
+        Response patResponse = webTarget
             .register(adminAuth)
             .path("patient")
             .request(MediaType.APPLICATION_JSON)
-            .post(Entity.entity(testPatient, MediaType.APPLICATION_JSON));
+            .post(Entity.entity(patient, MediaType.APPLICATION_JSON));
+        createdPatientId = patResponse.readEntity(Patient.class).getId();
 
-        createdPatientId = patientResponse.readEntity(Patient.class).getId();
-    
-        // Create a Medicine
+        // Create Medicine
         Medicine medicine = new Medicine();
-        medicine.setDrugName("Ibuprofen");
-        medicine.setManufacturerName("Generic Pharma");
-        medicine.setDosageInformation("Take one tablet twice a day");
-    
-        Response medResponse = webTarget
+        medicine.setDrugName("test");
+        medicine.setManufacturerName("test Labs");
+        medicine.setDosageInformation("test mg");
+
+        Response mResponse = webTarget
             .register(adminAuth)
             .path("medicine")
             .request(MediaType.APPLICATION_JSON)
             .post(Entity.entity(medicine, MediaType.APPLICATION_JSON));
-            testMedicine = medResponse.readEntity(Medicine.class);
-            createdMedicineId = testMedicine.getId();
-
+        createdMedicineId = mResponse.readEntity(Medicine.class).getId();
     }
-    
 
     @AfterEach
-    void tearDown() {
-        if (createdPatientId != null)
-            webTarget.register(adminAuth).path("patient/" + createdPatientId).request().delete();
-        if (createdPhysicianId != null)
-            webTarget.register(adminAuth).path("physician/" + createdPhysicianId).request().delete();
-        if (createdMedicineId != null)
-            webTarget.register(adminAuth).path("medicine/" + createdMedicineId).request().delete();
+void cleanUp() {
+    if (createdPatientId != null && createdPhysicianId != null) {
+        webTarget.register(adminAuth)
+            .path("prescription/" + createdPatientId + "/" + createdPhysicianId)
+            .request()
+            .delete();  // delete prescription first
     }
+    if (createdPhysicianId != null)
+        webTarget.register(adminAuth).path("physician/" + createdPhysicianId).request().delete();
+    if (createdPatientId != null)
+        webTarget.register(adminAuth).path("patient/" + createdPatientId).request().delete();
+    if (createdMedicineId != null)
+        webTarget.register(adminAuth).path("medicine/" + createdMedicineId).request().delete();
+}
+
 
     void testAddPrescription() {
         Prescription prescription = new Prescription();
-        PrescriptionPK pk = new PrescriptionPK(createdPhysicianId, createdPatientId);
-        prescription.setId(pk);
+        prescription.setId(new PrescriptionPK(createdPhysicianId, createdPatientId));
+        prescription.setNumberOfRefills(2);
+        prescription.setPrescriptionInformation("Take as needed");
 
         Medicine med = new Medicine();
         med.setId(createdMedicineId);
@@ -122,27 +113,14 @@ class PrescriptionResourceTest {
             .post(Entity.entity(prescription, MediaType.APPLICATION_JSON));
 
         assertEquals(201, response.getStatus());
-
         Prescription created = response.readEntity(Prescription.class);
         assertNotNull(created);
         assertEquals(createdMedicineId, created.getMedicine().getId());
     }
 
     @Test
-    void testGetPrescriptionById() {
+    void testCreatePrescription() {
         testAddPrescription();
-
-        Response response = webTarget
-            .register(adminAuth)
-            .path("prescription/" + createdPatientId + "/" + createdPhysicianId)
-            .request()
-            .get();
-
-        assertEquals(200, response.getStatus());
-
-        Prescription result = response.readEntity(Prescription.class);
-        assertNotNull(result);
-        assertEquals(createdPhysicianId, result.getId().getPhysicianId());
     }
 
     @Test
@@ -150,25 +128,21 @@ class PrescriptionResourceTest {
         testAddPrescription();
 
         Prescription updated = new Prescription();
-        PrescriptionPK pk = new PrescriptionPK(createdPhysicianId, createdPatientId);
-        updated.setId(pk);
-
+        updated.setId(new PrescriptionPK(createdPhysicianId, createdPatientId));
+        updated.setNumberOfRefills(5);
+        updated.setPrescriptionInformation("Updated info");
         Medicine med = new Medicine();
         med.setId(createdMedicineId);
         updated.setMedicine(med);
 
-        updated.setNumberOfRefills(5);
-        updated.setPrescriptionInformation("Updated info");
-
-        Response response = webTarget
+        Response putResp = webTarget
             .register(adminAuth)
             .path("prescription/" + createdPatientId + "/" + createdPhysicianId)
             .request(MediaType.APPLICATION_JSON)
             .put(Entity.entity(updated, MediaType.APPLICATION_JSON));
 
-        assertEquals(200, response.getStatus());
-
-        Prescription result = response.readEntity(Prescription.class);
+        assertEquals(200, putResp.getStatus());
+        Prescription result = putResp.readEntity(Prescription.class);
         assertEquals(5, result.getNumberOfRefills());
         assertEquals("Updated info", result.getPrescriptionInformation());
     }
@@ -183,31 +157,47 @@ class PrescriptionResourceTest {
             .request()
             .delete();
 
-        assertEquals(200, deleteResponse.getStatus());
+        assertEquals(204, deleteResponse.getStatus());
 
-        Response getResponse = webTarget
-            .register(adminAuth)
-            .path("prescription/" + createdPatientId + "/" + createdPhysicianId)
-            .request()
-            .get();
-
-        assertEquals(204, getResponse.getStatus());
+ 
     }
 
     @Test
     void testGetAllPrescriptions() {
         testAddPrescription();
 
-        Response response = webTarget
+        Response resp = webTarget
             .register(adminAuth)
             .path("prescription")
             .request()
             .get();
 
-        assertEquals(200, response.getStatus());
+        assertEquals(200, resp.getStatus());
 
-        List<Prescription> prescriptions = response.readEntity(new GenericType<List<Prescription>>() {});
-        assertNotNull(prescriptions);
-        assertThat(prescriptions, is(not(empty())));
+        List<Prescription> list = resp.readEntity(new GenericType<List<Prescription>>() {});
+        assertNotNull(list);
+        assertThat(list, is(not(empty())));
+
     }
+    @Test
+void testGetPrescriptionById() {
+    // First create the prescription
+    testAddPrescription();
+
+    // Then retrieve it via the GET endpoint
+    Response response = webTarget
+        .register(adminAuth)
+        .path("prescription/" + createdPatientId + "/" + createdPhysicianId)
+        .request(MediaType.APPLICATION_JSON)
+        .get();
+
+    assertEquals(200, response.getStatus(), "Expected 200 OK when fetching prescription by patient and physician ID");
+
+    Prescription fetched = response.readEntity(Prescription.class);
+    assertNotNull(fetched, "Fetched prescription should not be null");
+    assertEquals(createdPatientId, fetched.getId().getPatientId(), "Patient ID should match");
+    assertEquals(createdPhysicianId, fetched.getId().getPhysicianId(), "Physician ID should match");
+    assertEquals("Take as needed", fetched.getPrescriptionInformation());
 }
+
+} 

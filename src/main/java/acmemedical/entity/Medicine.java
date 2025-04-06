@@ -11,7 +11,11 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.AttributeOverride;
@@ -45,7 +49,8 @@ import jakarta.persistence.Transient;
 @AttributeOverride(name = "id", column = @Column(name = "medicine_id"))
 //Hint - PojoBase is inherited by any entity with integer as their primary key.
 //Hint - PojoBaseCompositeKey is inherited by any entity with a composite key as their primary key.
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Medicine extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -81,7 +86,9 @@ public class Medicine extends PojoBase implements Serializable {
 	@OneToMany(cascade=CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "medicine")
 	// Hint - java.util.Set is used as a collection, however List could have been used as well.
 	// Hint - java.util.Set will be unique and also possibly can provide better get performance with HashCode.
-	private Set<Prescription> prescriptions = new HashSet<>();
+
+@JsonIgnore
+private Set<Prescription> prescriptions = new HashSet<>();
 
 	public Medicine() {
 		super();

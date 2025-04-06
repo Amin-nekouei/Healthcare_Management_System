@@ -9,6 +9,7 @@ package acmemedical.entity;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -38,7 +39,7 @@ import jakarta.persistence.Table;
 @Access(AccessType.FIELD)
 @NamedQuery(name = "Prescription.findAll", query = "SELECT p FROM Prescription p")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -50,7 +51,7 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 	@MapsId("physicianId")
     @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "physician_id", referencedColumnName = "id", nullable = false)
-	@JsonIgnore
+	@JsonBackReference("physician-prescriptions")
 	private Physician physician;
 
 	//TODO PR01 - Add missing annotations.  Similar to physician, this field is a part of the composite key of this entity.  What should be the cascade and fetch types?  Reference to a patient is not optional.
@@ -58,6 +59,7 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 	@MapsId("patientId")
 	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id", referencedColumnName = "patient_id", nullable = false)
+	@JsonBackReference
 	private Patient patient;
 
 	//TODO PR02 - Add missing annotations.  What should be the cascade and fetch types?

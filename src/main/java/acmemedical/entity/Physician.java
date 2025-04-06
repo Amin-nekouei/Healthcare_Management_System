@@ -10,8 +10,10 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.AttributeOverride;
@@ -38,7 +40,7 @@ import jakarta.persistence.Table;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
 @NamedQuery(name = "Physician.ALL_PHYSICIANS_QUERY_NAME", 
             query = "SELECT p FROM Physician p")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Physician extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -64,9 +66,19 @@ public class Physician extends PojoBase implements Serializable {
 
 	// TODO PH06 - Add annotations for 1:M relation.  What should be the cascade and fetch types?
     @OneToMany(mappedBy = "physician", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	@JsonIgnore
+@JsonManagedReference("physician-prescriptions")
 	private Set<Prescription> prescriptions = new HashSet<>();
-
+	@OneToMany(mappedBy = "physician", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Set<SecurityUser> securityUsers = new HashSet<>();
+	
+	public Set<SecurityUser> getSecurityUsers() {
+		return securityUsers;
+	}
+	
+	public void setSecurityUsers(Set<SecurityUser> securityUsers) {
+		this.securityUsers = securityUsers;
+	}
 	public String getFirstName() {
 		return firstName;
 	}

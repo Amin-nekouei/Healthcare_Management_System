@@ -112,6 +112,6 @@ public class PatientResource {
         patient.getPrescriptions().add(newPrescription);
         service.updatePatient(patientId, patient);
         
-        return Response.ok(patient).build();
+        return Response.status(Response.Status.CREATED).entity(patient).build();
     }
 }

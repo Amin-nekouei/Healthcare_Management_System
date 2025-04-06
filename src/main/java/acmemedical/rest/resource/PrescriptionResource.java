@@ -97,6 +97,6 @@ public class PrescriptionResource {
             @PathParam("physicianId") int physicianId) {
         LOG.debug("Deleting prescription for patient {} and physician {}", patientId, physicianId);
         service.deletePrescription(patientId, physicianId);
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 } 

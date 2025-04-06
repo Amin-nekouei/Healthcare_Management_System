@@ -1,3 +1,4 @@
+
 /********************************************************************************************************
  * File:  MedicalTrainingResource.java Course Materials CST 8277
  *
@@ -32,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 
 import acmemedical.ejb.ACMEMedicalService;
 import acmemedical.entity.MedicalTraining;
+import acmemedical.entity.Medicine;
 import acmemedical.entity.MedicalSchool;
 
 @Path(MEDICAL_TRAINING_RESOURCE_NAME)
@@ -83,42 +85,24 @@ public class MedicalTrainingResource {
     public Response addMedicalTraining(MedicalTraining newMedicalTraining) {
         LOG.debug("Adding a new medical training = {}", newMedicalTraining);
         
-        // Check if medicalSchool is provided
-        if (newMedicalTraining.getMedicalSchool() == null) {
-            return Response.status(Status.BAD_REQUEST)
-                    .entity("Medical school is required. Please provide medicalSchool with id and public fields.")
-                    .build();
-        }
-        
-        // Check if medicalSchool has id
-        if (newMedicalTraining.getMedicalSchool().getId() == 0) {
-            return Response.status(Status.BAD_REQUEST)
-                    .entity("Medical school ID is required")
-                    .build();
-        }
-        
-        // Get the existing medical school
-        MedicalSchool school = service.getMedicalSchoolById(newMedicalTraining.getMedicalSchool().getId());
-        if (school == null) {
+       // MedicalTraining medicalTraining = service.mergeMedicalTraining(newMedicalTraining);
+       
+        //return Response.status(Status.CREATED).entity(medicalTraining).build();
+        // Ensure the MedicalSchool is managed
+    if (newMedicalTraining.getMedicalSchool() != null) {
+        MedicalSchool ms = service.getMedicalSchoolById(newMedicalTraining.getMedicalSchool().getId());
+        if (ms == null) {
             return Response.status(Status.NOT_FOUND)
                     .entity("Medical school not found with ID: " + newMedicalTraining.getMedicalSchool().getId())
                     .build();
         }
+        newMedicalTraining.setMedicalSchool(ms); // Set the managed MedicalSchool
+    }
+
+    // Persist the new medical training using merge
+    MedicalTraining medicalTraining = service.mergeMedicalTraining(newMedicalTraining);
+    return Response.status(Status.CREATED).entity(medicalTraining).build();
         
-        // Create a new MedicalTraining and set its properties
-        MedicalTraining medicalTraining = new MedicalTraining();
-        medicalTraining.setDurationAndStatus(newMedicalTraining.getDurationAndStatus());
-        
-        // Set the managed medical school
-        medicalTraining.setMedicalSchool(school);
-        
-        // Add the training to the school's collection
-        school.getMedicalTrainings().add(medicalTraining);
-        
-        // Update the school to persist the new training
-        service.updateMedicalSchool(school.getId(), school);
-        
-        return Response.ok(medicalTraining).build();
     }
 
     @RolesAllowed({ADMIN_ROLE})

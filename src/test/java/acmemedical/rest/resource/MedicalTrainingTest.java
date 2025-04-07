@@ -37,20 +37,47 @@ class MedicalTrainingResourceTest {
 
     @BeforeEach
     void setUp() {
+        createdSchoolId = createTestSchool();
+        createdTrainingId = createMedicalTrainingForSchool(createdSchoolId);
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (createdTrainingId != null) {
+            Response deleteTraining = webTarget.register(adminAuth)
+                .path("medicaltraining/" + createdTrainingId)
+                .request()
+                .delete();
+            createdTrainingId = null;
+        }
+
+        if (createdSchoolId != null) {
+            Response deleteSchool = webTarget.register(adminAuth)
+                .path("medicalschool/" + createdSchoolId)
+                .request()
+                .delete();
+            createdSchoolId = null;
+        }
+    }
+
+    private Integer createTestSchool() {
         Map<String, Object> publicSchoolJson = new HashMap<>();
-        publicSchoolJson.put("@type", "PublicSchool");
-        publicSchoolJson.put("name", "Test School " + System.currentTimeMillis());
+publicSchoolJson.put("@type", "PublicSchool");
+publicSchoolJson.put("name", "Test School " + System.currentTimeMillis());
+publicSchoolJson.put("public", true);  // ✅ REQUIRED for Jackson subtype resolution
 
-        Response schoolResponse = webTarget
-            .register(adminAuth)
-            .path("medicalschool")
-            .request(MediaType.APPLICATION_JSON)
-            .post(Entity.json(publicSchoolJson));
+Response response = webTarget
+    .register(adminAuth)
+    .path("medicalschool")
+    .request(MediaType.APPLICATION_JSON)
+    .post(Entity.json(publicSchoolJson));
 
-        assertEquals(200, schoolResponse.getStatus());
-        Map<String, Object> schoolMap = schoolResponse.readEntity(new GenericType<>() {});
-        createdSchoolId = ((Number) schoolMap.get("id")).intValue();
+        assertEquals(200, response.getStatus());
+        Map<String, Object> schoolMap = response.readEntity(new GenericType<>() {});
+        return ((Number) schoolMap.get("id")).intValue();
+    }
 
+    private Integer createMedicalTrainingForSchool(Integer schoolId) {
         MedicalTraining training = new MedicalTraining();
         DurationAndStatus das = new DurationAndStatus();
         das.setActive((byte) 1);
@@ -58,38 +85,19 @@ class MedicalTrainingResourceTest {
         das.setEndDate(LocalDateTime.of(2025, 5, 31, 0, 0));
         training.setDurationAndStatus(das);
 
-        Response trainingResponse = webTarget
-            .register(adminAuth)
-            .path("medicalschool/" + createdSchoolId + "/medicaltraining")
+        Response response = webTarget.register(adminAuth)
+            .path("medicalschool/" + schoolId + "/medicaltraining")
             .request(MediaType.APPLICATION_JSON)
             .post(Entity.entity(training, MediaType.APPLICATION_JSON));
 
-        assertEquals(201, trainingResponse.getStatus());
-        Map<String, Object> trainingMap = trainingResponse.readEntity(new GenericType<>() {});
-        createdTrainingId = ((Number) trainingMap.get("id")).intValue();
-    }
-
-    @AfterEach
-    void tearDown() {
-        if (createdTrainingId != null) {
-            webTarget.register(adminAuth)
-                .path("medicaltraining/" + createdTrainingId)
-                .request()
-                .delete();
-        }
-
-        if (createdSchoolId != null) {
-            webTarget.register(adminAuth)
-                .path("medicalschool/" + createdSchoolId)
-                .request()
-                .delete();
-        }
+        assertEquals(201, response.getStatus());
+        Map<String, Object> trainingMap = response.readEntity(new GenericType<>() {});
+        return ((Number) trainingMap.get("id")).intValue();
     }
 
     @Test
     void testGetMedicalTrainingById() {
-        Response response = webTarget
-            .register(adminAuth)
+        Response response = webTarget.register(adminAuth)
             .path("medicaltraining/" + createdTrainingId)
             .request()
             .get();
@@ -101,8 +109,7 @@ class MedicalTrainingResourceTest {
 
     @Test
     void testGetAllMedicalTrainings() {
-        Response response = webTarget
-            .register(adminAuth)
+        Response response = webTarget.register(adminAuth)
             .path("medicaltraining")
             .request()
             .get();
@@ -116,14 +123,13 @@ class MedicalTrainingResourceTest {
     @Test
     void testUpdateMedicalTraining() {
         MedicalTraining updatedTraining = new MedicalTraining();
-        DurationAndStatus newStatus = new DurationAndStatus();
-        newStatus.setActive((byte) 0);
-        newStatus.setStartDate(LocalDateTime.of(2025, 6, 1, 0, 0));
-        newStatus.setEndDate(LocalDateTime.of(2025, 6, 30, 0, 0));
-        updatedTraining.setDurationAndStatus(newStatus);
+        DurationAndStatus updatedStatus = new DurationAndStatus();
+        updatedStatus.setActive((byte) 0);
+        updatedStatus.setStartDate(LocalDateTime.of(2025, 6, 1, 0, 0));
+        updatedStatus.setEndDate(LocalDateTime.of(2025, 6, 30, 0, 0));
+        updatedTraining.setDurationAndStatus(updatedStatus);
 
-        Response response = webTarget
-            .register(adminAuth)
+        Response response = webTarget.register(adminAuth)
             .path("medicaltraining/" + createdTrainingId)
             .request(MediaType.APPLICATION_JSON)
             .put(Entity.entity(updatedTraining, MediaType.APPLICATION_JSON));
@@ -136,28 +142,25 @@ class MedicalTrainingResourceTest {
 
     @Test
     void testDeleteMedicalTrainingById() {
-        Response delete = webTarget
-            .register(adminAuth)
+        Response delete = webTarget.register(adminAuth)
             .path("medicaltraining/" + createdTrainingId)
             .request()
             .delete();
 
         assertEquals(200, delete.getStatus());
 
-        Response get = webTarget
-            .register(adminAuth)
+        Response get = webTarget.register(adminAuth)
             .path("medicaltraining/" + createdTrainingId)
             .request()
             .get();
 
-        assertTrue(get.getStatus() == 404 || get.getStatus() == 500); // Handle known delete/read edge case
-        createdTrainingId = null;
+        assertTrue(get.getStatus() == 404 || get.getStatus() == 500); // Edge case after deletion
+        createdTrainingId = null; // prevent re-delete in tearDown
     }
 
     @Test
     void testMedicalTrainingAttachedToCorrectSchool() {
-        Response response = webTarget
-            .register(adminAuth)
+        Response response = webTarget.register(adminAuth)
             .path("medicaltraining/" + createdTrainingId)
             .request()
             .get();

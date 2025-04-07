@@ -7,11 +7,13 @@
 package acmemedical.entity;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
@@ -40,64 +42,98 @@ import static acmemedical.utility.MyConstants.PARAM1;
 	query = "SELECT mc FROM MedicalCertificate mc WHERE mc.id = :" + PARAM1)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class MedicalCertificate extends PojoBase implements Serializable {
-	private static final long serialVersionUID = 1L;
-	
-	//added a variable by JK
-	public static final String ID_CARD_QUERY_NAME = "MedicalCertificate.ID_CARD_QUERY_NAME";
-	
-	// TODO MC03 - Add annotations for 1:1 mapping.  What should be the cascade and fetch types?
-	@OneToOne
-@JoinColumn(name = "training_id", referencedColumnName = "training_id")
-private MedicalTraining medicalTraining;
+    private static final long serialVersionUID = 1L;
+    
+    public static final String ID_CARD_QUERY_NAME = "MedicalCertificate.ID_CARD_QUERY_NAME";
+    
+    @OneToOne
+    @JoinColumn(name = "training_id", referencedColumnName = "training_id")
+    @JsonIgnore  // Prevent full serialization of the training object
+    private MedicalTraining medicalTraining;
 
-	// TODO MC04 - Add annotations for M:1 mapping.  What should be the cascade and fetch types?
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    // TODO MC04 - Add annotations for M:1 mapping.  What should be the cascade and fetch types?
+    //@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "physician_id", referencedColumnName = "id", nullable = false)
-private Physician owner;
+    @JsonIgnore // Prevent full serialization of the Physician object
+    private Physician owner;
 
 	// TODO MC05 - Add annotations.
     @Column(name = "signed", nullable = false)
-	private byte signed;
+    private byte signed;
 
-	public MedicalCertificate() {
-		super();
-	}
-	
-	public MedicalCertificate(MedicalTraining medicalTraining, Physician owner, byte signed) {
-		this();
-		this.medicalTraining = medicalTraining;
-		this.owner = owner;
-		this.signed = signed;
-	}
+    public MedicalCertificate() {
+        super();
+    }
 
-	public MedicalTraining getMedicalTraining() {
-		return medicalTraining;
-	}
+    // Add these methods to handle JSON deserialization
+    @JsonProperty("owner")
+    public void setOwnerFromJson(Map<String, Object> ownerMap) {
+        if (ownerMap != null && ownerMap.containsKey("id")) {
+            Physician physician = new Physician();
+            physician.setId(((Number)ownerMap.get("id")).intValue());
+            if (ownerMap.containsKey("version")) {
+                physician.setVersion(((Number)ownerMap.get("version")).intValue());
+            }
+            this.owner = physician;
+        }
+    }
 
-	public void setMedicalTraining(MedicalTraining medicalTraining) {
-		this.medicalTraining = medicalTraining;
-	}
+    @JsonProperty("medicalTraining")
+    public void setMedicalTrainingFromJson(Map<String, Object> trainingMap) {
+        if (trainingMap != null && trainingMap.containsKey("id")) {
+            MedicalTraining training = new MedicalTraining();
+            training.setId(((Number)trainingMap.get("id")).intValue());
+            if (trainingMap.containsKey("version")) {
+                training.setVersion(((Number)trainingMap.get("version")).intValue());
+            }
+            this.medicalTraining = training;
+        }
+    }
+    
+    public MedicalCertificate(MedicalTraining medicalTraining, Physician owner, byte signed) {
+        this();
+        this.medicalTraining = medicalTraining;
+        this.owner = owner;
+        this.signed = signed;
+    }
 
-	public Physician getOwner() {
-		return owner;
-	}
+    public MedicalTraining getMedicalTraining() {
+        return medicalTraining;
+    }
 
-	public void setOwner(Physician owner) {
-		this.owner = owner;
-	}
+    @JsonProperty("training_id")
+    public Long getTrainingId() {
+        return medicalTraining != null ? Long.valueOf(medicalTraining.getId()) : null;
+    }
 
-	public byte getSigned() {
-		return signed;
-	}
+    @JsonProperty("owner_id")
+    public Long getOwnerId() {
+        return owner != null ? Long.valueOf(owner.getId()) : null;
+    }
 
-	public void setSigned(byte signed) {
-		this.signed = signed;
-	}
-	@JsonIgnore
-	public void setSigned(boolean signed) {
-		this.signed = (byte) (signed ? 0b0001 : 0b0000);
-	}
-	
-	//Inherited hashCode/equals is sufficient for this entity class
+    public void setMedicalTraining(MedicalTraining medicalTraining) {
+        this.medicalTraining = medicalTraining;
+    }
 
+    public Physician getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Physician owner) {
+        this.owner = owner;
+    }
+
+    public byte getSigned() {
+        return signed;
+    }
+
+    public void setSigned(byte signed) {
+        this.signed = signed;
+    }
+
+    @JsonIgnore
+    public void setSigned(boolean signed) {
+        this.signed = (byte) (signed ? 0b0001 : 0b0000);
+    }
 }

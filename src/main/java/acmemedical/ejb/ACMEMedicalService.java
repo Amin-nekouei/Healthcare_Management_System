@@ -342,8 +342,28 @@ public void deletePhysicianById(int id) {
 
     @Transactional
     public MedicalCertificate persistMedicalCertificate(MedicalCertificate newMedicalCertificate) {
-        em.persist(newMedicalCertificate);
-        return newMedicalCertificate;
+        // Load and set the physician
+        if (newMedicalCertificate.getOwner() != null) {
+            Physician physician = em.find(Physician.class, newMedicalCertificate.getOwner().getId());
+            if (physician == null) {
+                throw new jakarta.persistence.EntityNotFoundException("Physician not found");
+            }
+            newMedicalCertificate.setOwner(physician);
+        }
+
+        // Load and set the medical training
+        if (newMedicalCertificate.getMedicalTraining() != null) {
+            MedicalTraining training = em.find(MedicalTraining.class, newMedicalCertificate.getMedicalTraining().getId());
+            if (training == null) {
+                throw new jakarta.persistence.EntityNotFoundException("Medical Training not found");
+            }
+            newMedicalCertificate.setMedicalTraining(training);
+        }
+
+        // Use merge instead of persist since we're dealing with existing entities
+        MedicalCertificate mergedCertificate = em.merge(newMedicalCertificate);
+        em.flush();
+        return mergedCertificate;
     }
 
     @Transactional

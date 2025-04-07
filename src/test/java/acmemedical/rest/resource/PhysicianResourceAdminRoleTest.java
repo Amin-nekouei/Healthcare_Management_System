@@ -23,7 +23,7 @@ import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-class PhysicianResourceTest {
+class PhysicianResourceAdminRoleTest {
     private Integer createdPhysicianId;
     private Physician testPhysician;
     private static WebTarget webTarget;

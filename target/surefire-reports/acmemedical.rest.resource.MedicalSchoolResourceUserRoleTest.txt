@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: acmemedical.rest.resource.MedicalSchoolResourceUserRoleTest
 -------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.295 s - in acmemedical.rest.resource.MedicalSchoolResourceUserRoleTest
+Tests run: 6, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.102 s <<< FAILURE! - in acmemedical.rest.resource.MedicalSchoolResourceUserRoleTest
+acmemedical.rest.resource.MedicalSchoolResourceUserRoleTest.testCanGetMedicalSchoolById  Time elapsed: 0.016 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected response: 500
+	at acmemedical.rest.resource.MedicalSchoolResourceUserRoleTest.testCanGetMedicalSchoolById(MedicalSchoolResourceUserRoleTest.java:61)
+

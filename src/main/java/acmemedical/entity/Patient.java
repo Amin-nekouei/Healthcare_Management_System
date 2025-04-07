@@ -51,32 +51,32 @@ public class Patient extends PojoBase implements Serializable {
 
 	// TODO PA03 - Add missing annotations.
 	@Column(name = "first_name", nullable = false)
-	@JsonProperty("first_name")
+	@JsonProperty("firstName")
 	private String firstName;
 
 	// TODO PA04 - Add missing annotations.
 	@Column(name = "last_name", nullable = false)
-	@JsonProperty("last_name")
+	@JsonProperty("lastName")
 	private String lastName;
 
 	// TODO PA05 - Add missing annotations.
 	@Column(name = "year_of_birth", nullable = false)
-	@JsonProperty("year_of_birth")
+	@JsonProperty("year")
 	private int year;
 
 	// TODO PA06 - Add missing annotations.
 	@Column(name = "home_address", nullable = false)
-	@JsonProperty("home_address")
+	@JsonProperty("address")
 	private String address;
 
 	// TODO PA07 - Add missing annotations.
 	@Column(name = "height_cm", nullable = false)
-	@JsonProperty("height_cm")
+	@JsonProperty("height")
 	private int height;
 
 	// TODO PA08 - Add missing annotations.
 	@Column(name = "weight_kg", nullable = false)
-	@JsonProperty("weight_kg")
+	@JsonProperty("weight")
 	private int weight;
 
 	// TODO PA09 - Add missing annotations.

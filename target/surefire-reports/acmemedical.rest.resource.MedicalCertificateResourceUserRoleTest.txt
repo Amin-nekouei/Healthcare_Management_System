@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: acmemedical.rest.resource.MedicalCertificateResourceUserRoleTest
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.995 s - in acmemedical.rest.resource.MedicalCertificateResourceUserRoleTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.536 s - in acmemedical.rest.resource.MedicalCertificateResourceUserRoleTest

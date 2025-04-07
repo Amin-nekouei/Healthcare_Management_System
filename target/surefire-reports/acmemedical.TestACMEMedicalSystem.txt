@@ -1,4 +1,11 @@
 -------------------------------------------------------------------------------
 Test set: acmemedical.TestACMEMedicalSystem
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.938 s - in acmemedical.TestACMEMedicalSystem
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.329 s <<< FAILURE! - in acmemedical.TestACMEMedicalSystem
+acmemedical.TestACMEMedicalSystem.test01_all_physicians_with_adminrole  Time elapsed: 0.055 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: a collection with size <1>
+     but: collection size was <2>
+	at acmemedical.TestACMEMedicalSystem.test01_all_physicians_with_adminrole(TestACMEMedicalSystem.java:98)
+

@@ -8,7 +8,7 @@ A Jakarta EE REST API for a healthcare system that models physicians, patients, 
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)
 ![Maven](https://img.shields.io/badge/Maven-C71A36?logo=apachemaven&logoColor=white)
 
-> **Status: work in progress.** This is the group project for the Enterprise Application Programming course (CST8277) at Algonquin College. It starts from an instructor-provided skeleton, and the `TODO` markers in the entity classes show the parts still being completed (JPA mappings, inheritance for medical schools, and some resources).
+> **Status: work in progress.** This is a project for the Enterprise Application Programming course (CST8277) at Algonquin College. It starts from an instructor-provided skeleton, and the `TODO` markers in the entity classes show the parts still being completed (JPA mappings, inheritance for medical schools, and some resources).
 
 ## What the project covers
 

@@ -19,7 +19,7 @@ import jakarta.ws.rs.client.*;
 import jakarta.ws.rs.core.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class MedicalTrainingResourceTest {
+class MedicalTrainingResourceAdminRoleTest {
 
     private static final String BASE_URI = "http://localhost:8080/rest-acmemedical-0.0.1-SNAPSHOT/api/v1";
     private static WebTarget webTarget;

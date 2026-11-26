@@ -18,7 +18,7 @@ A Jakarta EE REST API for a healthcare system that models physicians, patients, 
 - **Role-based authorization:** `@RolesAllowed` restricts operations to `ADMIN_ROLE` or `USER_ROLE`.
 - **JSON error responses** through exception mappers and an error servlet.
 - **API documentation:** an OpenAPI description with a bundled Swagger UI page.
-- **Integration tests** with JUnit 5 and a Jersey client.
+- **72 integration tests** with JUnit 5 and a Jersey client, testing every resource as both an admin and a regular user.
 
 ## Example endpoints
 
@@ -59,6 +59,6 @@ Scripts/                     # SQL setup scripts
 
 | Member | Contribution |
 |---|---|
-| **Amin Nekouei** · [LinkedIn](https://www.linkedin.com/in/amin-nekouei) · [GitHub](https://github.com/Amin-nekouei) | Medicine and MedicalSchool REST resources, 42 JUnit tests, bug fixes |
-| Kyung A Jang | Physician, Prescription and Patient REST resources, security user and role annotations, JUnit tests |
-| Yanrong Cen | MedicalCertificate and MedicalTraining REST resources, bug fixes, JUnit tests |
+| **Amin Nekouei** · [LinkedIn](https://www.linkedin.com/in/amin-nekouei) · [GitHub](https://github.com/Amin-nekouei) | Medicine and MedicalSchool REST resources, all 72 JUnit tests, bug fixes |
+| Kyung A Jang | Physician, Prescription and Patient REST resources, security user and role annotations |
+| Yanrong Cen | MedicalCertificate and MedicalTraining REST resources, bug fixes |

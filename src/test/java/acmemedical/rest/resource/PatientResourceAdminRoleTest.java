@@ -18,7 +18,7 @@ import jakarta.ws.rs.client.*;
 import jakarta.ws.rs.core.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class PatientResourceTest {
+class PatientResourceAdminRoleTest {
 
     private static final String BASE_URI = "http://localhost:8080/rest-acmemedical-0.0.1-SNAPSHOT/api/v1";
     private static WebTarget webTarget;
@@ -168,56 +168,6 @@ void testDeletePatientById() {
     assertEquals(404, getResponse.getStatus());
 }
 
-
-// @Test
-// void testAddPrescriptionToPatient() {
-//     // Create a medicine first
-//     Medicine medicine = new Medicine();
-//     medicine.setDrugName("Amoxicillin");
-//     medicine.setManufacturerName("Pharma Inc");
-//     medicine.setDosageInformation("250mg");
-
-//     Response medResponse = webTarget
-//         .register(adminAuth)
-//         .path("medicine")
-//         .request(MediaType.APPLICATION_JSON)
-//         .post(Entity.entity(medicine, MediaType.APPLICATION_JSON));
-
-//     assertEquals(201, medResponse.getStatus()); // use 201 if POST /medicine returns CREATED
-//     int medicineId = medResponse.readEntity(Medicine.class).getId();
-
-//     // Construct the prescription
-//     Prescription prescription = new Prescription();
-//     prescription.setPrescriptionInformation("Take twice daily");
-//     prescription.setNumberOfRefills(2);
-
-//     // Reference the created Medicine (must have valid ID)
-//     Medicine medRef = new Medicine();
-//     medRef.setId(medicineId);
-//     prescription.setMedicine(medRef);
-
-//     // Reference the created Physician (required for PK generation)
-//     Physician refPhysician = new Physician();
-//     refPhysician.setId(createdPhysicianId);
-//     prescription.setPhysician(refPhysician); // 🔥 CRUCIAL LINE
-
-//     // Add prescription to patient via /patient/{id}/prescription
-//     Response response = webTarget
-//         .register(adminAuth)
-//         .path("patient/" + createdPatientId + "/prescription")
-//         .request(MediaType.APPLICATION_JSON)
-//         .post(Entity.entity(prescription, MediaType.APPLICATION_JSON));
-
-//     assertEquals(200, response.getStatus()); // POST returns CREATED
-
-//     Patient updatedPatient = response.readEntity(Patient.class);
-//     assertNotNull(updatedPatient.getPrescriptions());
-//     assertThat(updatedPatient.getPrescriptions(), hasItem(
-//         hasProperty("prescriptionInformation", containsString("Take twice daily"))
-//     ));
-
-//     // Cleanup
-//     webTarget.register(adminAuth).path("medicine/" + medicineId).request().delete();
 }
 
 

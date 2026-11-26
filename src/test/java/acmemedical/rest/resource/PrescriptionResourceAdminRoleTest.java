@@ -15,7 +15,7 @@ import acmemedical.entity.*;
 import jakarta.ws.rs.client.*;
 import jakarta.ws.rs.core.*;
 
-class PrescriptionResourceTest {
+class PrescriptionResourceAdminRoleTest {
 
     private static final String BASE_URI = "http://localhost:8080/rest-acmemedical-0.0.1-SNAPSHOT/api/v1";
 

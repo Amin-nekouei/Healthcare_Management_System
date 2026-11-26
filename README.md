@@ -8,7 +8,7 @@ A Jakarta EE REST API for a healthcare system that models physicians, patients, 
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)
 ![Maven](https://img.shields.io/badge/Maven-C71A36?logo=apachemaven&logoColor=white)
 
-> **Status: work in progress.** This is a project for the Enterprise Application Programming course (CST8277) at Algonquin College. It starts from an instructor-provided skeleton, and the `TODO` markers in the entity classes show the parts still being completed (JPA mappings, inheritance for medical schools, and some resources).
+> **Status: complete.** A group project for the Enterprise Application Programming course (CST8277) at Algonquin College, built on an instructor-provided skeleton. All REST resources, JPA mappings and role-based security are implemented and covered by JUnit integration tests.
 
 ## What the project covers
 
@@ -55,6 +55,10 @@ src/test/java/acmemedical/   # JUnit 5 integration tests
 Scripts/                     # SQL setup scripts
 ```
 
-## Author
+## Team
 
-**Amin Nekouei** · [LinkedIn](https://www.linkedin.com/in/amin-nekouei) · [GitHub](https://github.com/Amin-nekouei)
+| Member | Contribution |
+|---|---|
+| **Amin Nekouei** · [LinkedIn](https://www.linkedin.com/in/amin-nekouei) · [GitHub](https://github.com/Amin-nekouei) | Medicine and MedicalSchool REST resources, 42 JUnit tests, bug fixes |
+| Kyung A Jang | Physician, Prescription and Patient REST resources, security user and role annotations, JUnit tests |
+| Yanrong Cen | MedicalCertificate and MedicalTraining REST resources, bug fixes, JUnit tests |

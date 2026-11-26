@@ -9,8 +9,15 @@ package acmemedical.entity;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -31,6 +38,8 @@ import jakarta.persistence.Table;
 @Table(name = "prescription")
 @Access(AccessType.FIELD)
 @NamedQuery(name = "Prescription.findAll", query = "SELECT p FROM Prescription p")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -42,12 +51,20 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 	@MapsId("physicianId")
     @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "physician_id", referencedColumnName = "id", nullable = false)
+	@JsonBackReference("physician-prescriptions")
 	private Physician physician;
 
 	//TODO PR01 - Add missing annotations.  Similar to physician, this field is a part of the composite key of this entity.  What should be the cascade and fetch types?  Reference to a patient is not optional.
+    
+	@MapsId("patientId")
+	@ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "patient_id", referencedColumnName = "patient_id", nullable = false)
+	@JsonBackReference
 	private Patient patient;
 
 	//TODO PR02 - Add missing annotations.  What should be the cascade and fetch types?
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "medicine_id")
 	private Medicine medicine;
 
 	@Column(name = "number_of_refills")
@@ -92,10 +109,11 @@ public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implement
 	public Medicine getMedicine() {
 		return medicine;
 	}
-
-	public void setMedicine(Medicine medicine) {
-		this.medicine = medicine;
+	public void setMedicine(Medicine m) {
+		this.medicine = m;
 	}
+
+
 
 	public int getNumberOfRefills() {
 		return numberOfRefills;

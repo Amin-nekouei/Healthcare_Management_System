@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 import jakarta.ejb.Singleton;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -43,6 +44,9 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import jakarta.security.enterprise.identitystore.Pbkdf2PasswordHash;
 import jakarta.transaction.Transactional;
+
+
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,13 +67,14 @@ import acmemedical.entity.MedicalSchool;
 /**
  * Stateless Singleton EJB Bean - ACMEMedicalService
  */
-@Singleton
+//@Singleton
+@Stateless
 public class ACMEMedicalService implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private static final Logger LOG = LogManager.getLogger();
     
-    @PersistenceContext(name = PU_NAME)
+    @PersistenceContext(name = "acmemedical-PU") //PU_NAME
     protected EntityManager em;
     
     @Inject
@@ -94,23 +99,39 @@ public class ACMEMedicalService implements Serializable {
 
     @Transactional
     public void buildUserForNewPhysician(Physician newPhysician) {
-        SecurityUser userForNewPhysician = new SecurityUser();
-        userForNewPhysician.setUsername(
-            DEFAULT_USER_PREFIX + "_" + newPhysician.getFirstName() + "." + newPhysician.getLastName());
-        Map<String, String> pbAndjProperties = new HashMap<>();
-        pbAndjProperties.put(PROPERTY_ALGORITHM, DEFAULT_PROPERTY_ALGORITHM);
-        pbAndjProperties.put(PROPERTY_ITERATIONS, DEFAULT_PROPERTY_ITERATIONS);
-        pbAndjProperties.put(PROPERTY_SALT_SIZE, DEFAULT_SALT_SIZE);
-        pbAndjProperties.put(PROPERTY_KEY_SIZE, DEFAULT_KEY_SIZE);
-        pbAndjPasswordHash.initialize(pbAndjProperties);
-        String pwHash = pbAndjPasswordHash.generate(DEFAULT_USER_PASSWORD.toCharArray());
-        userForNewPhysician.setPwHash(pwHash);
-        userForNewPhysician.setPhysician(newPhysician);
-        SecurityRole userRole = /* TODO ACMECS01 - Use NamedQuery on SecurityRole to find USER_ROLE */ null;
-        userForNewPhysician.getRoles().add(userRole);
-        userRole.getUsers().add(userForNewPhysician);
-        em.persist(userForNewPhysician);
+        try {
+            LOG.debug("Building SecurityUser for Physician: {}", newPhysician.getId());
+    
+            SecurityUser userForNewPhysician = new SecurityUser();
+            userForNewPhysician.setUsername("user_" + newPhysician.getFirstName() + "." + newPhysician.getLastName());
+            
+            Map<String, String> props = new HashMap<>();
+            props.put(PROPERTY_ALGORITHM, DEFAULT_PROPERTY_ALGORITHM);
+            props.put(PROPERTY_ITERATIONS, DEFAULT_PROPERTY_ITERATIONS);
+            props.put(PROPERTY_SALT_SIZE, DEFAULT_SALT_SIZE);
+            props.put(PROPERTY_KEY_SIZE, DEFAULT_KEY_SIZE);
+            pbAndjPasswordHash.initialize(props);
+            
+            String pwHash = pbAndjPasswordHash.generate(DEFAULT_USER_PASSWORD.toCharArray());
+            userForNewPhysician.setPwHash(pwHash);
+            userForNewPhysician.setPhysician(newPhysician);
+            
+            TypedQuery<SecurityRole> query = em.createNamedQuery(SecurityRole.FIND_BY_NAME, SecurityRole.class);
+            query.setParameter("name", USER_ROLE);
+            SecurityRole userRole = query.getSingleResult();
+            
+            userForNewPhysician.getRoles().add(userRole);
+            userRole.getUsers().add(userForNewPhysician);
+    
+            LOG.debug("Persisting SecurityUser: {}", userForNewPhysician.getUsername());
+    
+            em.persist(userForNewPhysician);
+        } catch (Exception e) {
+            LOG.error("Error in buildUserForNewPhysician: {}", e.getMessage(), e);
+            throw e;
+        }
     }
+    
 
     @Transactional
     public Medicine setMedicineForPhysicianPatient(int physicianId, int patientId, Medicine newMedicine) {
@@ -161,20 +182,24 @@ public class ACMEMedicalService implements Serializable {
      * @param id - physician id to delete
      */
     @Transactional
-    public void deletePhysicianById(int id) {
-        Physician physician = getPhysicianById(id);
-        if (physician != null) {
-            em.refresh(physician);
-            TypedQuery<SecurityUser> findUser = 
-            /* TODO ACMECS02 - Use NamedQuery on SecurityRole to find this related Student
-               so that when we remove it, the relationship from SECURITY_USER table
-               is not dangling
-            */ null;
-            SecurityUser sUser = findUser.getSingleResult();
-            em.remove(sUser);
-            em.remove(physician);
+public void deletePhysicianById(int id) {
+    Physician physician = getPhysicianById(id);
+    if (physician != null) {
+        em.refresh(physician);
+
+        TypedQuery<SecurityUser> findUsers = em.createNamedQuery("SecurityUser.FIND_BY_PHYSICIAN_ID", SecurityUser.class);
+        findUsers.setParameter("physicianId", id);
+
+        List<SecurityUser> users = findUsers.getResultList();
+
+        for (SecurityUser user : users) {
+            em.remove(user);
         }
+
+        em.remove(physician);
     }
+}
+    
     
     public List<MedicalSchool> getAllMedicalSchools() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -227,7 +252,6 @@ public class ACMEMedicalService implements Serializable {
     }
     
     // Please study & use the methods below in your test suites
-    
     public boolean isDuplicated(MedicalSchool newMedicalSchool) {
         TypedQuery<Long> allMedicalSchoolsQuery = em.createNamedQuery(IS_DUPLICATE_QUERY_NAME, Long.class);
         allMedicalSchoolsQuery.setParameter(PARAM1, newMedicalSchool.getName());
@@ -252,15 +276,19 @@ public class ACMEMedicalService implements Serializable {
         return medicalSchoolToBeUpdated;
     }
     
+    public MedicalTraining mergeMedicalTraining(MedicalTraining medicalTraining) {
+        return em.merge(medicalTraining);
+    }
     @Transactional
     public MedicalTraining persistMedicalTraining(MedicalTraining newMedicalTraining) {
-        em.persist(newMedicalTraining);
+        //em.persist(newMedicalTraining);
+        em.merge(newMedicalTraining);
         return newMedicalTraining;
     }
     
     public MedicalTraining getMedicalTrainingById(int mtId) {
         TypedQuery<MedicalTraining> allMedicalTrainingQuery = em.createNamedQuery(MedicalTraining.FIND_BY_ID, MedicalTraining.class);
-        allMedicalTrainingQuery.setParameter(PARAM1, mtId);
+        allMedicalTrainingQuery.setParameter("id", mtId); //Modified Apri02 2025
         return allMedicalTrainingQuery.getSingleResult();
     }
 
@@ -274,5 +302,313 @@ public class ACMEMedicalService implements Serializable {
         }
         return medicalTrainingToBeUpdated;
     }
+    
+    @Transactional
+    public MedicalTraining deleteMedicalTraining(int id) {
+        MedicalTraining medicalTraining = getMedicalTrainingById(id);
+        if (medicalTraining != null) {
+            em.refresh(medicalTraining);
+    
+            // Break bidirectional link with MedicalCertificate
+            if (medicalTraining.getCertificate() != null) {
+                medicalTraining.getCertificate().setMedicalTraining(null);
+            }
+    
+            // ✅ Break reference to MedicalSchool to prevent dangling Hibernate proxy
+            if (medicalTraining.getMedicalSchool() != null) {
+                medicalTraining.setMedicalSchool(null);
+            }
+    
+            em.remove(medicalTraining);
+            return medicalTraining;
+        }
+        return null;
+    }
+    
+    
+    // MedicalCertificate CRUD operations
+    public List<MedicalCertificate> getAllMedicalCertificates() {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<MedicalCertificate> cq = cb.createQuery(MedicalCertificate.class);
+        cq.select(cq.from(MedicalCertificate.class));
+        return em.createQuery(cq).getResultList();
+    }
+
+    public MedicalCertificate getMedicalCertificateById(int id) {
+        TypedQuery<MedicalCertificate> query = em.createNamedQuery(MedicalCertificate.ID_CARD_QUERY_NAME, MedicalCertificate.class);
+        query.setParameter(PARAM1, id);
+        return query.getSingleResult();
+    }
+
+    @Transactional
+    public MedicalCertificate persistMedicalCertificate(MedicalCertificate newMedicalCertificate) {
+        // Load and set the physician
+        if (newMedicalCertificate.getOwner() != null) {
+            Physician physician = em.find(Physician.class, newMedicalCertificate.getOwner().getId());
+            if (physician == null) {
+                throw new jakarta.persistence.EntityNotFoundException("Physician not found");
+            }
+            newMedicalCertificate.setOwner(physician);
+        }
+
+        // Load and set the medical training
+        if (newMedicalCertificate.getMedicalTraining() != null) {
+            MedicalTraining training = em.find(MedicalTraining.class, newMedicalCertificate.getMedicalTraining().getId());
+            if (training == null) {
+                throw new jakarta.persistence.EntityNotFoundException("Medical Training not found");
+            }
+            newMedicalCertificate.setMedicalTraining(training);
+        }
+
+        // Use merge instead of persist since we're dealing with existing entities
+        MedicalCertificate mergedCertificate = em.merge(newMedicalCertificate);
+        em.flush();
+        return mergedCertificate;
+    }
+
+    @Transactional
+    public MedicalCertificate updateMedicalCertificate(int id, MedicalCertificate updatingMedicalCertificate) {
+        MedicalCertificate medicalCertificateToBeUpdated = getMedicalCertificateById(id);
+        if (medicalCertificateToBeUpdated != null) {
+            updatingMedicalCertificate.setId(id);
+            updatingMedicalCertificate.setVersion(medicalCertificateToBeUpdated.getVersion());
+            medicalCertificateToBeUpdated= em.merge(updatingMedicalCertificate);
+            em.flush();
+        }
+        return medicalCertificateToBeUpdated;
+    }
+
+    @Transactional
+    public void deleteMedicalCertificateById(int id) {
+        MedicalCertificate medicalCertificate = getMedicalCertificateById(id);
+        if (medicalCertificate != null) {
+            em.refresh(medicalCertificate);
+            em.remove(medicalCertificate);
+        }
+    }
+    
+    // Patient CRUD operations
+    public List<Patient> getAllPatients() {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Patient> cq = cb.createQuery(Patient.class);
+        cq.select(cq.from(Patient.class));
+        return em.createQuery(cq).getResultList();
+    }
+
+    public Patient getPatientById(int id) {
+        return em.find(Patient.class, id);
+    }
+
+    @Transactional
+    public Patient persistPatient(Patient newPatient) {
+        em.persist(newPatient);
+        return newPatient;
+    }
+
+    @Transactional
+    public Patient updatePatient(int id, Patient updatingPatient) {
+        Patient patientToBeUpdated = getPatientById(id);
+        if (patientToBeUpdated != null) {
+            updatingPatient.setId(id);
+            updatingPatient.setVersion(patientToBeUpdated.getVersion());
+            patientToBeUpdated = em.merge(updatingPatient);
+            em.flush();
+        }
+        return patientToBeUpdated;
+    }
+
+    @Transactional
+    public void deletePatientById(int id) {
+        Patient patient = getPatientById(id);
+        if (patient != null) {
+            em.remove(patient);
+        }
+    }
+    // Get all medicines
+public List<Medicine> getAllMedicines() {
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<Medicine> cq = cb.createQuery(Medicine.class);
+    cq.select(cq.from(Medicine.class));
+    return em.createQuery(cq).getResultList();
+}
+
+// Get medicine by ID
+public Medicine getMedicineById(int id) {
+    return em.find(Medicine.class, id);
+}
+
+// Create new medicine
+@Transactional
+public Medicine persistMedicine(Medicine newMedicine) {
+    em.persist(newMedicine);
+    return newMedicine;
+}
+
+// Update existing medicine
+@Transactional
+public Medicine updateMedicine(Medicine updatedMedicine) {
+    Medicine existingMedicine = getMedicineById(updatedMedicine.getId());
+    if (existingMedicine != null) {
+        existingMedicine.setMedicine(
+            updatedMedicine.getDrugName(),
+            updatedMedicine.getManufacturerName(),
+            updatedMedicine.getDosageInformation()
+        );
+        em.merge(existingMedicine);
+        em.flush();
+        return existingMedicine;
+    }
+    return null;
+}
+
+// Delete medicine
+@Transactional
+public void deleteMedicineById(int id) {
+    Medicine medicine = getMedicineById(id);
+    if (medicine != null) {
+        em.remove(medicine);
+    }
+}
+
+  // Prescription CRUD operations
+    public List<Prescription> getAllPrescriptions() {
+        LOG.debug("Getting all prescriptions");
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Prescription> cq = cb.createQuery(Prescription.class);
+        Root<Prescription> root = cq.from(Prescription.class);
+        cq.select(root);
+        TypedQuery<Prescription> q = em.createQuery(cq);
+        return q.getResultList();
+    }
+
+    public Prescription getPrescriptionById(int patientId, int physicianId) {
+        LOG.debug("Getting prescription for patient={} and physician={}", patientId, physicianId);
+        PrescriptionPK id = new PrescriptionPK();
+        id.setPatientId(patientId);
+        id.setPhysicianId(physicianId);
+        return em.find(Prescription.class, id);
+    }
+
+    @Transactional
+    public Prescription persistPrescription(Prescription prescription) {
+        if (prescription == null) {
+            LOG.debug("Prescription is null");
+            return null;
+        }
+    
+        Integer patientId = null;
+        Integer physicianId = null;
+        Integer medicineId = null;
+    
+        if (prescription.getPatient() != null) {
+            patientId = prescription.getPatient().getId();
+        } else if (prescription.getId() != null) {
+            patientId = prescription.getId().getPatientId();
+        }
+    
+        if (prescription.getPhysician() != null) {
+            physicianId = prescription.getPhysician().getId();
+        } else if (prescription.getId() != null) {
+            physicianId = prescription.getId().getPhysicianId();
+        }
+    
+        if (prescription.getMedicine() != null) {
+            medicineId = prescription.getMedicine().getId();
+        }
+    
+        if (patientId == null || physicianId == null || medicineId == null) {
+            LOG.debug("Missing required IDs: patientId={}, physicianId={}, medicineId={}", 
+                      patientId, physicianId, medicineId);
+            return null;
+        }
+    
+        // Lookup references
+        Patient patient = em.find(Patient.class, patientId);
+        Physician physician = em.find(Physician.class, physicianId);
+        Medicine medicine = em.find(Medicine.class, medicineId);
+    
+        if (patient == null || physician == null || medicine == null) {
+            LOG.debug("Entities not found: patient={}, physician={}, medicine={}",
+                      patient != null, physician != null, medicine != null);
+            return null;
+        }
+    
+        PrescriptionPK id = new PrescriptionPK();
+        id.setPatientId(patientId);
+        id.setPhysicianId(physicianId);
+    
+        if (em.find(Prescription.class, id) != null) {
+            LOG.debug("Prescription already exists for patient={} and physician={}", 
+                     patientId, physicianId);
+            return null;
+        }
+    
+        prescription.setId(id);
+        prescription.setPatient(patient);
+        prescription.setPhysician(physician);
+        prescription.setMedicine(medicine);
+    
+        try {
+            em.persist(prescription);
+            patient.getPrescriptions().add(prescription);
+            physician.getPrescriptions().add(prescription);
+            em.flush();
+            return prescription;
+        } catch (Exception e) {
+            LOG.error("Error persisting prescription: {}", e.getMessage());
+            return null;
+        }
+    }
+    
+
+    @Transactional
+    public Prescription updatePrescription(int patientId, int physicianId, Prescription updatingPrescription) {
+        PrescriptionPK id = new PrescriptionPK();
+        id.setPatientId(patientId);
+        id.setPhysicianId(physicianId);
+        Prescription prescriptionToUpdate = em.find(Prescription.class, id);
+        if (prescriptionToUpdate != null) {
+            prescriptionToUpdate = em.merge(updatingPrescription);
+        }
+        return prescriptionToUpdate;
+    }
+
+    @Transactional
+    public void deletePrescription(int patientId, int physicianId) {
+        PrescriptionPK id = new PrescriptionPK();
+        id.setPatientId(patientId);
+        id.setPhysicianId(physicianId);
+        Prescription prescription = em.find(Prescription.class, id);
+    
+        if (prescription != null) {
+            em.refresh(prescription);
+    
+            deleteSecurityUsersByPhysicianId(physicianId);
+    
+            if (prescription.getPatient() != null) {
+                prescription.getPatient().getPrescriptions().remove(prescription);
+            }
+    
+            if (prescription.getPhysician() != null) {
+                prescription.getPhysician().getPrescriptions().remove(prescription);
+            }
+    
+            em.remove(prescription);
+        }
+    }
+    
+    
+@Transactional
+public void deleteSecurityUsersByPhysicianId(int physicianId) {
+    List<SecurityUser> users = em.createNamedQuery("SecurityUser.FIND_BY_PHYSICIAN_ID", SecurityUser.class)
+        .setParameter("physicianId", physicianId)
+        .getResultList();
+
+    for (SecurityUser user : users) {
+        user.getRoles().clear(); // Remove links from join table
+        em.flush(); // Force delete of join table rows
+        em.remove(em.contains(user) ? user : em.merge(user));
+    }
+}
     
 }

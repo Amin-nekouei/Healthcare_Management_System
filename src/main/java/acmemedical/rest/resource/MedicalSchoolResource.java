@@ -59,6 +59,7 @@ public class MedicalSchoolResource {
     
     @GET
     // TODO MSR01 - Specify the roles allowed for this method
+    @RolesAllowed({ADMIN_ROLE, USER_ROLE}) // MSR01
     @Path("/{medicalSchoolId}")
     public Response getMedicalSchoolById(@PathParam("medicalSchoolId") int medicalSchoolId) {
         LOG.debug("Retrieving medical school with id = {}", medicalSchoolId);
@@ -69,6 +70,7 @@ public class MedicalSchoolResource {
 
     @DELETE
     // TODO MSR02 - Specify the roles allowed for this method
+    @RolesAllowed({ADMIN_ROLE}) // MSR02
     @Path("/{medicalSchoolId}")
     public Response deleteMedicalSchool(@PathParam("medicalSchoolId") int msId) {
         LOG.debug("Deleting medical school with id = {}", msId);
@@ -98,12 +100,47 @@ public class MedicalSchoolResource {
     public Response addMedicalTrainingToMedicalSchool(@PathParam("medicalSchoolId") int msId, MedicalTraining newMedicalTraining) {
         LOG.debug("Adding a new MedicalTraining to medical school with id = {}", msId);
         
+        // Get the existing medical school
         MedicalSchool ms = service.getMedicalSchoolById(msId);
-        newMedicalTraining.setMedicalSchool(ms);
-        ms.getMedicalTrainings().add(newMedicalTraining);
-        service.updateMedicalSchool(msId, ms);
+        if (ms == null) {
+            return Response.status(Status.NOT_FOUND)
+                    .entity("Medical school not found with ID: " + msId)
+                    .build();
+        }
+          // Set the managed medical school
+    newMedicalTraining.setMedicalSchool(ms);
+    
+    // Add the training to the school's collection
+    ms.getMedicalTrainings().add(newMedicalTraining);
+    
+    try {
+        MedicalTraining createdTraining = service.mergeMedicalTraining(newMedicalTraining);
+        return Response.status(Status.CREATED).entity(createdTraining).build();
+    } catch (Exception e) {
+        LOG.error("Error merge medical training: {}", e.getMessage());
+        return Response.status(Status.INTERNAL_SERVER_ERROR)
+                .entity("Error persisting medical training: " + e.getMessage())
+                .build();
+    }
+        //newMedicalTraining.setMedicalSchool(ms);
+       // ms.getMedicalTrainings().add(newMedicalTraining);
+       // service.updateMedicalSchool(msId, ms);
+
         
-        return Response.ok(sc).build();
+        // Create a new MedicalTraining and set its properties
+       // MedicalTraining medicalTraining = new MedicalTraining();
+        //medicalTraining.setDurationAndStatus(newMedicalTraining.getDurationAndStatus());
+        
+        // Set the managed medical school
+        //medicalTraining.setMedicalSchool(ms);
+        
+        // Add the training to the school's collection
+        //ms.getMedicalTrainings().add(medicalTraining);
+        
+        // Update the school to persist the new training
+        //service.updateMedicalSchool(msId, ms);
+        
+        //return Response.ok(ms).build();
     }
 
     @RolesAllowed({ADMIN_ROLE, USER_ROLE})

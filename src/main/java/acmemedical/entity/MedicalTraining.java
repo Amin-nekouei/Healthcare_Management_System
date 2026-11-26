@@ -11,7 +11,26 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.NamedQueries;
+
+import static acmemedical.utility.MyConstants.PARAM1;
+
 
 @SuppressWarnings("unused")
 
@@ -20,14 +39,36 @@ import jakarta.persistence.Embedded;
  */
 //TODO MT01 - Add the missing annotations.
 //TODO MT02 - Do we need a mapped super class?  If so, which one?
-public class MedicalTraining extends PojoBase implements Serializable {
+@Entity
+@Table(name = "medical_training")
+@AttributeOverrides({
+    @AttributeOverride(name = "id", column = @Column(name = "training_id")),
+    @AttributeOverride(name = "version", column = @Column(name = "version")),
+    @AttributeOverride(name = "created", column = @Column(name = "created")),
+    @AttributeOverride(name = "updated", column = @Column(name = "updated"))
+})
+@NamedQueries({
+    @NamedQuery(name = MedicalTraining.ALL_MEDICAL_TRAININGS_QUERY_NAME,
+                query = "SELECT distinct mt FROM MedicalTraining mt LEFT JOIN FETCH mt.school LEFT JOIN FETCH mt.certificate"),
+    @NamedQuery(name = MedicalTraining.FIND_BY_ID,
+                query = "SELECT mt FROM MedicalTraining mt WHERE mt.id = :id") //April02 2025
+})
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+	public class MedicalTraining extends PojoBase implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	public static final String ALL_MEDICAL_TRAININGS_QUERY_NAME = "MedicalTraining.ALL_MEDICAL_TRAININGS_QUERY_NAME";
+	public static final String FIND_BY_ID = "MedicalTraining.FIND_BY_ID";
 	
 	// TODO MT03 - Add annotations for M:1.  What should be the cascade and fetch types?
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "school_id", referencedColumnName = "school_id", nullable = false)
 	private MedicalSchool school;
 
 	// TODO MT04 - Add annotations for 1:1.  What should be the cascade and fetch types?
-	private MedicalCertificate certificate;
+	@OneToOne(mappedBy = "medicalTraining", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore  // ✅ Prevents looping back from certificate
+private MedicalCertificate certificate;
 
 	@Embedded
 	private DurationAndStatus durationAndStatus;

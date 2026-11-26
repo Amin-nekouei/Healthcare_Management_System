@@ -17,6 +17,7 @@
         <!-- Hibernate specific props 
            https://docs.jboss.org/hibernate/stable/orm/userguide/html_single/Hibernate_User_Guide.html#configurations
         -->
+<!-- <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/acmemedical"/> -->        
         <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
         <property name="hibernate.format_sql" value="true"/>
         <property name="hibernate.use_sql_comments" value="true"/>

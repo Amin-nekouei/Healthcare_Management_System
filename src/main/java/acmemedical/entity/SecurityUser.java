@@ -13,6 +13,23 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
 @SuppressWarnings("unused")
 
 /**
@@ -20,23 +37,51 @@ import java.util.Set;
  */
 
 //TODO SU01 - Make this into JPA entity and add all the necessary annotations inside the class.
+@Entity
+@Table(name = "security_user") 
+@NamedQueries({
+    @NamedQuery(name = "SecurityUser.FIND_BY_PHYSICIAN_ID", 
+                query = "SELECT su FROM SecurityUser su WHERE su.physician.id = :physicianId"),
+    @NamedQuery(name = "SecurityUser.userByName",
+    query = "SELECT s FROM SecurityUser s WHERE s.username = :param1")
+
+})
+//@NamedQuery(
+//	    name = "SecurityUser.FIND_BY_PHYSICIAN_ID",
+//	    query = "SELECT su FROM SecurityUser su WHERE su.physician.id = :" + PARAM1
+//	)
+@AttributeOverride(name = "id", column = @Column(name = "user_id"))
 public class SecurityUser implements Serializable, Principal {
     /** Explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
 
+    //add the variable by JK
+	public static final String FIND_BY_PHYSICIAN_ID = "SecurityUser.FIND_BY_PHYSICIAN_ID";
+
     //TODO SU02 - Add annotations.
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     protected int id;
     
     //TODO SU03 - Add annotations.
+    @Column(name = "username", nullable = false, unique = true)
     protected String username;
     
     //TODO SU04 - Add annotations.
+    @Column(name = "password_hash", nullable = false)
     protected String pwHash;
     
     //TODO SU05 - Add annotations.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "physician_id", referencedColumnName = "id")
     protected Physician physician;
     
     //TODO SU06 - Add annotations.
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_has_role",
+               joinColumns = @JoinColumn(name = "user_id"),
+               inverseJoinColumns = @JoinColumn(name = "role_id"))
     protected Set<SecurityRole> roles = new HashSet<SecurityRole>();
 
     public SecurityUser() {

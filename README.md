@@ -32,15 +32,22 @@ A Jakarta EE REST API for a healthcare system that models physicians, patients, 
 
 ## Tech stack
 
-Java · Jakarta EE 9 (JAX-RS, CDI, EJB, JPA, Jakarta Security) · Hibernate 5.6 · Jackson · MySQL 8 · Payara Server · Maven · JUnit 5 · Log4j 2 · OpenAPI / Swagger UI
+Java 21 · Jakarta EE 9 (JAX-RS, CDI, EJB, JPA, Jakarta Security) · Hibernate 5.6 · Jackson · MySQL 8 · Payara Server 6 · Maven · JUnit 5 · Log4j 2 · OpenAPI / Swagger UI
 
 ## Running it
 
-1. Install MySQL 8, Payara Server and JDK 11 or later.
-2. Create the `acmemedical` database and run the SQL scripts in `Scripts/`.
-3. Check the connection pool in `src/main/webapp/WEB-INF/payara-resources.xml`.
-4. Build with `mvn clean package` and deploy the WAR from `target/` to Payara.
-5. With the server running, run the tests with `mvn test`.
+1. Install JDK 21, Maven 3.9 and Payara Server 6 (Community).
+2. Start MySQL 8 with an `acmemedical` database and a `cst8277` / `8277` user, for example with Docker:
+   ```
+   docker run -d --name acmemedical-db -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=acmemedical -e MYSQL_USER=cst8277 -e MYSQL_PASSWORD=8277 mysql:8.0
+   ```
+   The tables and sample data are created automatically when the app is deployed. The connection settings are in `src/main/webapp/WEB-INF/payara-resources.xml`.
+3. Build with `mvn clean package -DskipTests` and deploy the WAR to Payara:
+   ```
+   asadmin start-domain domain1
+   asadmin deploy --force=true target/rest-acmemedical-0.0.1-SNAPSHOT.war
+   ```
+4. With the server running, run the tests with `mvn test`. All 72 tests pass.
 
 ## Project structure
 

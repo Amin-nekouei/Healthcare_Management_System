@@ -33,8 +33,6 @@ import static acmemedical.utility.MyConstants.PARAM1;
 /**
  * The persistent class for the medical_certificate database table.
  */
-//TODO MC01 - Add the missing annotations.
-//TODO MC02 - Do we need a mapped super class?  If so, which one?
 @Entity 
 @Table(name = "medical_certificate")
 @AttributeOverride(name = "id", column = @Column(name = "certificate_id"))
@@ -51,14 +49,12 @@ public class MedicalCertificate extends PojoBase implements Serializable {
     @JsonIgnore  // Prevent full serialization of the training object
     private MedicalTraining medicalTraining;
 
-    // TODO MC04 - Add annotations for M:1 mapping.  What should be the cascade and fetch types?
     //@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "physician_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore // Prevent full serialization of the Physician object
     private Physician owner;
 
-	// TODO MC05 - Add annotations.
     @Column(name = "signed", nullable = false)
     private byte signed;
 

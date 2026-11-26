@@ -32,11 +32,9 @@ import jakarta.persistence.Table;
  */
 @SuppressWarnings("unused")
 
-//TODO PH01 - Add the missing annotations.
 @Entity
 @Table(name = "physician")
 @AttributeOverride(name = "id", column = @Column(name = "id"))
-//TODO PH02 - Do we need a mapped super class? If so, which one?
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE) 
 @NamedQuery(name = "Physician.ALL_PHYSICIANS_QUERY_NAME", 
             query = "SELECT p FROM Physician p")
@@ -51,20 +49,16 @@ public class Physician extends PojoBase implements Serializable {
     	super();
     }
 
-	// TODO PH03 - Add annotations.
     @Column(name = "first_name", nullable = false)
 	private String firstName;
 
-	// TODO PH04 - Add annotations.
     @Column(name = "last_name", nullable = false) 
 	private String lastName;
 
-	// TODO PH05 - Add annotations for 1:M relation.  What should be the cascade and fetch types?
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)  
 	@JsonIgnore  
 	private Set<MedicalCertificate> medicalCertificates = new HashSet<>();
 
-	// TODO PH06 - Add annotations for 1:M relation.  What should be the cascade and fetch types?
     @OneToMany(mappedBy = "physician", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 @JsonManagedReference("physician-prescriptions")
 	private Set<Prescription> prescriptions = new HashSet<>();
@@ -95,7 +89,6 @@ public class Physician extends PojoBase implements Serializable {
 		this.lastName = lastName;
 	}
 
-	// TODO PH07 - Is an annotation needed here?
     public Set<MedicalCertificate> getMedicalCertificates() {
 		return medicalCertificates;
 	}
@@ -104,7 +97,6 @@ public class Physician extends PojoBase implements Serializable {
 		this.medicalCertificates = medicalCertificates;
 	}
 
-	// TODO PH08 - Is an annotation needed here?
     public Set<Prescription> getPrescriptions() {
 		return prescriptions;
 	}

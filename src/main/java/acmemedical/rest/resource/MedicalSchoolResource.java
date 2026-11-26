@@ -58,7 +58,6 @@ public class MedicalSchoolResource {
     }
     
     @GET
-    // TODO MSR01 - Specify the roles allowed for this method
     @RolesAllowed({ADMIN_ROLE, USER_ROLE}) // MSR01
     @Path("/{medicalSchoolId}")
     public Response getMedicalSchoolById(@PathParam("medicalSchoolId") int medicalSchoolId) {
@@ -69,7 +68,6 @@ public class MedicalSchoolResource {
     }
 
     @DELETE
-    // TODO MSR02 - Specify the roles allowed for this method
     @RolesAllowed({ADMIN_ROLE}) // MSR02
     @Path("/{medicalSchoolId}")
     public Response deleteMedicalSchool(@PathParam("medicalSchoolId") int msId) {

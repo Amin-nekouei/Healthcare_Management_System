@@ -36,7 +36,6 @@ import jakarta.persistence.Table;
  * User class used for (JSR-375) Jakarta EE Security authorization/authentication
  */
 
-//TODO SU01 - Make this into JPA entity and add all the necessary annotations inside the class.
 @Entity
 @Table(name = "security_user") 
 @NamedQueries({
@@ -58,26 +57,21 @@ public class SecurityUser implements Serializable, Principal {
     //add the variable by JK
 	public static final String FIND_BY_PHYSICIAN_ID = "SecurityUser.FIND_BY_PHYSICIAN_ID";
 
-    //TODO SU02 - Add annotations.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     protected int id;
     
-    //TODO SU03 - Add annotations.
     @Column(name = "username", nullable = false, unique = true)
     protected String username;
     
-    //TODO SU04 - Add annotations.
     @Column(name = "password_hash", nullable = false)
     protected String pwHash;
     
-    //TODO SU05 - Add annotations.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "physician_id", referencedColumnName = "id")
     protected Physician physician;
     
-    //TODO SU06 - Add annotations.
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_has_role",
                joinColumns = @JoinColumn(name = "user_id"),
@@ -112,7 +106,6 @@ public class SecurityUser implements Serializable, Principal {
         this.pwHash = pwHash;
     }
 
-    // TODO SU07 - Setup custom JSON serializer
     public Set<SecurityRole> getRoles() {
         return roles;
     }

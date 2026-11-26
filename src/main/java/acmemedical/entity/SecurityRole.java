@@ -27,7 +27,6 @@ import jakarta.persistence.Table;
 /**
  * Role class used for (JSR-375) Jakarta EE Security authorization/authentication
  */
-//TODO SR01 - Make this into JPA entity and add all necessary annotations inside the class.
 @Entity
 @Table(name = "security_role")
 @NamedQuery(name = SecurityRole.FIND_BY_NAME, query = "SELECT sr FROM SecurityRole sr WHERE sr.roleName = :name")
@@ -38,17 +37,14 @@ public class SecurityRole implements Serializable {
 
 	public static final String FIND_BY_NAME = "SecurityRole.FIND_BY_NAME";
        
-    //TODO SR02 - Add annotations.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     protected int id;
     
-    //TODO SR03 - Add annotations.
     @Column(name = "name", nullable = false, unique = true)
     protected String roleName;
     
-    //TODO SR04 - Add annotations.
     @ManyToMany(mappedBy = "roles")
     protected Set<SecurityUser> users = new HashSet<SecurityUser>();
 

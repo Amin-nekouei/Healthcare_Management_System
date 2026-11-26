@@ -37,8 +37,6 @@ import static acmemedical.utility.MyConstants.PARAM1;
 /**
  * The persistent class for the medical_training database table.
  */
-//TODO MT01 - Add the missing annotations.
-//TODO MT02 - Do we need a mapped super class?  If so, which one?
 @Entity
 @Table(name = "medical_training")
 @AttributeOverrides({
@@ -60,12 +58,10 @@ import static acmemedical.utility.MyConstants.PARAM1;
 	public static final String ALL_MEDICAL_TRAININGS_QUERY_NAME = "MedicalTraining.ALL_MEDICAL_TRAININGS_QUERY_NAME";
 	public static final String FIND_BY_ID = "MedicalTraining.FIND_BY_ID";
 	
-	// TODO MT03 - Add annotations for M:1.  What should be the cascade and fetch types?
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "school_id", referencedColumnName = "school_id", nullable = false)
 	private MedicalSchool school;
 
-	// TODO MT04 - Add annotations for 1:1.  What should be the cascade and fetch types?
 	@OneToOne(mappedBy = "medicalTraining", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonIgnore  // ✅ Prevents looping back from certificate
 private MedicalCertificate certificate;

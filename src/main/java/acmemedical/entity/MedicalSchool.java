@@ -42,7 +42,7 @@ import jakarta.persistence.Table;
 //Do we need a mapped super class?  If so, which one?
 //Add in JSON annotations to indicate different sub-classes of MedicalSchool
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Entity (name = "MedicalSchool") // TODO MS01 - Mark as JPA Entity
+@Entity (name = "MedicalSchool")
 @Table(name = "medical_school")
 @AttributeOverride(name = "id", column = @Column(name = "school_id"))
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)  
@@ -70,16 +70,13 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
 	public static final String SPECIFIC_MEDICAL_SCHOOL_QUERY_NAME = "MedicalSchool.SPECIFIC_MEDICAL_SCHOOL_QUERY_NAME";
 	public static final String IS_DUPLICATE_QUERY_NAME = "MedicalSchool.IS_DUPLICATE_QUERY_NAME";
 	
-	// TODO MS05 - Add the missing annotations.
 	@Column(name = "name", unique = true, nullable = false)
 	private String name;
 
-	// TODO MS06 - Add the 1:M annotation.  What should be the cascade and fetch types?
 	@OneToMany(mappedBy = "school", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonIgnore
 	private Set<MedicalTraining> medicalTrainings = new HashSet<>();
 
-	// TODO MS07 - Add missing annotation.
 	@Column(name = "public", insertable = false, updatable = false)
 	private boolean isPublic;
 
@@ -92,7 +89,6 @@ public abstract class MedicalSchool extends PojoBase implements Serializable {
         this.isPublic = isPublic;
     }
 
-	// TODO MS08 - Is an annotation needed here?
 	public Set<MedicalTraining> getMedicalTrainings() {
 		return medicalTrainings;
 	}

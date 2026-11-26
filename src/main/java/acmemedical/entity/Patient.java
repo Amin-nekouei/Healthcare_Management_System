@@ -33,8 +33,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 /**
  * The persistent class for the patient database table.
  */
-//TODO PA01 - Add the missing annotations.
-//TODO PA02 - Do we need a mapped super class?  If so, which one?
 @Entity
 @Table(name = "patient")
 @AttributeOverride(name = "id", column = @Column(name = "patient_id"))
@@ -49,42 +47,34 @@ public class Patient extends PojoBase implements Serializable {
 	public static final String FIND_BY_ID = "Patient.FIND_BY_ID";
 	
 
-	// TODO PA03 - Add missing annotations.
 	@Column(name = "first_name", nullable = false)
 	@JsonProperty("first_name")
 	private String firstName;
 
-	// TODO PA04 - Add missing annotations.
 	@Column(name = "last_name", nullable = false)
 	@JsonProperty("last_name")
 	private String lastName;
 
-	// TODO PA05 - Add missing annotations.
 	@Column(name = "year_of_birth", nullable = false)
 	@JsonProperty("year_of_birth")
 	private int year;
 
-	// TODO PA06 - Add missing annotations.
 	@Column(name = "home_address", nullable = false)
 	@JsonProperty("home_address")
 	private String address;
 
-	// TODO PA07 - Add missing annotations.
 	@Column(name = "height_cm", nullable = false)
 	@JsonProperty("height_cm")
 	private int height;
 
-	// TODO PA08 - Add missing annotations.
 	@Column(name = "weight_kg", nullable = false)
 	@JsonProperty("weight_kg")
 	private int weight;
 
-	// TODO PA09 - Add missing annotations.
 	@Column(name = "smoker", nullable = false)
 	@JsonProperty("smoker")
 	private byte smoker;
 
-	// TODO PA10 - Add annotations for 1:M relation.  What should be the cascade and fetch types?
 	@OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 @JsonManagedReference
 	private Set<Prescription> prescriptions = new HashSet<>();

@@ -45,7 +45,7 @@ public class CustomIdentityStoreJPAHelper {
             query.setParameter(PARAM1, username);
             user = query.getSingleResult();
         } catch (NoResultException e) {
-            // 사용자 없음
+            // No user with that name; return null
         }
         
         return user;

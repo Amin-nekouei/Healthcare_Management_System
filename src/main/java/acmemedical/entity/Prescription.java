@@ -43,7 +43,6 @@ import jakarta.persistence.Table;
 public class Prescription extends PojoBaseCompositeKey<PrescriptionPK> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	// Hint - What annotation is used for a composite primary key type?
 	@EmbeddedId
 	private PrescriptionPK id;
 

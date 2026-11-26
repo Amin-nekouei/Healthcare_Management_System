@@ -124,7 +124,7 @@ class PhysicianResourceTest {
 
     @Test
     void testUpdateMedicineForPhysicianPatient() {
-        // 사전에 유효한 physicianId 와 patientId가 DB에 있어야 합니다
+        // A valid physicianId and patientId must already exist in the DB
         int physicianId = 1;
         int patientId = 1;
         Medicine medicine = new Medicine();

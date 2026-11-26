@@ -19,7 +19,6 @@ import jakarta.persistence.Embeddable;
 /**
  * The primary key class for the prescription database table.
  */
-//Hint - @Access is used to establish where the annotation for JPA will be placed, field or properties. 
 @Embeddable
 @Access(AccessType.FIELD)
 public class PrescriptionPK implements Serializable {

@@ -8,7 +8,7 @@ A Jakarta EE REST API for a healthcare system that models physicians, patients, 
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)
 ![Maven](https://img.shields.io/badge/Maven-C71A36?logo=apachemaven&logoColor=white)
 
-> **Status: complete.** A group project for the Enterprise Application Programming course (CST8277) at Algonquin College, built on an instructor-provided skeleton. All REST resources, JPA mappings and role-based security are implemented and covered by JUnit integration tests.
+> **Status: complete.** A group project for the Enterprise Application Programming course (CST8277) at Algonquin College.
 
 ## What the project covers
 
